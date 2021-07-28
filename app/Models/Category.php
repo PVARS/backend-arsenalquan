@@ -6,19 +6,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Role extends Model
+class Category extends Model
 {
     use HasFactory;
 
-    protected $table = 'role';
+    protected $table = 'category';
 
-    function user(): HasMany
+    function news(): HasMany
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(News::class);
     }
 
     protected $fillable = [
-        'role_name',
+        'category_name',
+        'slug',
+        'icon',
         'disabled'
     ];
 
