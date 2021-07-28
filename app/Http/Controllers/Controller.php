@@ -70,11 +70,20 @@ class Controller extends BaseController
     /**
      * Send error 500
      *
-     * @param $msg
+     * @param string $msg
      * @return JsonResponse
      */
-    public function sendError500($msg): JsonResponse
+    public function sendError500(string $msg = 'Lỗi hệ thống. Vui lòng quay lại sau'): JsonResponse
     {
         return response()->json(['message'=>$msg], 500);
+    }
+
+    /**
+     * @param $arr
+     * @return JsonResponse
+     */
+    public function responseData($arr): JsonResponse
+    {
+        return response()->json($arr);
     }
 }
