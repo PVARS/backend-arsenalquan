@@ -4,7 +4,7 @@
 namespace App\Http\Request;
 
 
-class LoginRequest extends HttpRequest
+class RegisterUserRequest extends HttpRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class LoginRequest extends HttpRequest
     public function rules(): array
     {
         return [
-            'login_id' => 'required|min:3|max:254',
+            'username' => 'required|min:3|max:254',
             'password' => 'required|min:6|max:50'
         ];
     }
@@ -35,9 +35,9 @@ class LoginRequest extends HttpRequest
     public function messages(): array
     {
         return [
-            'login_id.required' => 'Vui lòng nhập tên đăng nhập.',
-            'login_id.min' => 'Tên đăng nhập không được bé hơn 3 ký tự.',
-            'login_id.max' => 'Tên đăng nhập không được quá 254 ký tự.',
+            'username.required' => 'Vui lòng nhập tên đăng nhập.',
+            'username.min' => 'Tên đăng nhập không được bé hơn 3 ký tự.',
+            'username.max' => 'Tên đăng nhập không được quá 254 ký tự.',
             'password.required' => 'Vui lòng nhập mật khẩu.',
             'password.min' => 'Mật khẩu không được bé hơn 6 ký tự.',
             'password.max' => 'Mật khẩu không được quá 50 ký tự.',
@@ -49,6 +49,6 @@ class LoginRequest extends HttpRequest
      */
     public function getData(): array
     {
-        return $this->only(['login_id','password']);
+        return $this->only(['username','password']);
     }
 }
