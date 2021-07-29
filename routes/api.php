@@ -43,6 +43,7 @@ Route::group(['prefix'=>'v1/admin'], function (){
             Route::post('/', [UserController::class, 'register']);
             Route::put('/{user}', [UserController::class, 'update']);
             Route::get('/disable/{user}', [UserController::class, 'disable']);
+            Route::delete('/{user}', [UserController::class, 'destroy']);
         });
 
         /*

@@ -41,7 +41,7 @@ class UserController extends Controller
         try {
             return $this->responseData(User::findOrFail($user));
         } catch (ModelNotFoundException $exception){
-            return $this->sendError500('Không tìm thấy');
+            return $this->sendMessage('Không tìm thấy', 404);
         }
     }
 
@@ -85,7 +85,7 @@ class UserController extends Controller
             try {
                 $result = User::findOrFail($user);
             } catch (ModelNotFoundException $exception){
-                return $this->sendError500('Không tìm thấy');
+                return $this->sendMessage('Không tìm thấy', 404);
             }
 
             $fields = $request->all();
@@ -117,7 +117,7 @@ class UserController extends Controller
             try {
                 $result = User::findOrFail($user);
             } catch (ModelNotFoundException $exception){
-                return $this->sendError500('Không tìm thấy');
+                return $this->sendMessage('Không tìm thấy', 404);
             }
 
             $status = $result->disabled;
@@ -131,6 +131,26 @@ class UserController extends Controller
 
             if ($result->update(['disabled' => $status]))
                 return $this->sendMessage($message);
+        } catch (Exception $exception){
+            return $this->sendError500();
+        }
+    }
+
+    public function destroy($user): JsonResponse
+    {
+        try {
+            try {
+                $result = User::findOrFail($user);
+            } catch (ModelNotFoundException $exception){
+                return $this->sendMessage('Không tìm thấy', 404);
+            }
+
+            if ($result->deleted_at){
+                return $this->sendMessage('Không tìm thấy', 404);
+            }
+
+            if ($result->update(['deleted_at' => Carbon::now('Asia/Ho_Chi_Minh')]))
+                return $this->sendMessage('Xoá thành công');
         } catch (Exception $exception){
             return $this->sendError500();
         }
