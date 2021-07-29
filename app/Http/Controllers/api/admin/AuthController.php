@@ -5,7 +5,7 @@ namespace App\Http\Controllers\api\admin;
 
 
 use App\Http\Controllers\Controller;
-use App\Http\Request\LoginRequest;
+use App\Http\Request\User\LoginRequest ;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
