@@ -25,9 +25,6 @@ class User extends Authenticatable
         'email',
         'full_name',
         'disabled',
-    ];
-
-    protected $hidden = [
         'password',
         'reset_link_token',
         'token',
@@ -38,5 +35,11 @@ class User extends Authenticatable
         'deleted_at',
     ];
 
-    protected $casts = [];
+    protected $hidden = [];
+
+    protected $casts = [
+        'created_at' => 'date:d-m-Y H:i:s',
+        'updated_at' => 'date:d-m-Y H:i:s',
+        'deleted_at' => 'date:d-m-Y H:i:s',
+    ];
 }
