@@ -1,12 +1,12 @@
 <?php
 
 
-namespace App\Http\Request\Role;
+namespace App\Http\Request\Category;
 
 
 use App\Http\Request\HttpRequest;
 
-class UpdateRoleRequest extends HttpRequest
+class CategoryRequest extends HttpRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +26,8 @@ class UpdateRoleRequest extends HttpRequest
     public function rules(): array
     {
         return [
-            'role_name' => 'required|max:254'
+            'category_name' => 'required|max:254|unique:category,category_name,'.$this->category,
+            'slug' => 'unique:category,slug,'.$this->category
         ];
     }
 
@@ -36,8 +37,10 @@ class UpdateRoleRequest extends HttpRequest
     public function messages(): array
     {
         return [
-            'role_name.required' => 'Vui lòng nhập tên vai trò.',
-            'role_name.max' => 'Tên đăng nhập không được quá 254 ký tự.'
+            'category_name.required' => 'Vui lòng nhập tên danh mục.',
+            'category_name.max' => 'Tên danh mục không được quá 254 ký tự.',
+            'category_name.unique' => 'Danh mục này đã tồn tại.',
+            'slug.unique' => 'URL đã tồn tại.'
         ];
     }
 
@@ -46,6 +49,6 @@ class UpdateRoleRequest extends HttpRequest
      */
     public function getData(): array
     {
-        return $this->only(['role_name']);
+        return $this->only(['category_name', 'icon']);
     }
 }

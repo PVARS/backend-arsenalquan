@@ -1,30 +1,28 @@
 <?php
 
-
 namespace App\Http\Controllers\api\admin;
 
-
 use App\Http\Controllers\Controller;
-use App\Http\Request\Role\RoleRequest;
-use App\Models\Role;
+use App\Http\Request\Category\CategoryRequest;
+use App\Models\Category;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\QueryException;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Exception;
+use Illuminate\Http\JsonResponse;
+use \Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
-class RoleController extends Controller
+class CategoryController extends Controller
 {
     /**
-     * Get all role
+     * Get all category
      *
      * @return JsonResponse
      */
     public function findAll(): JsonResponse
     {
         try {
-            $listRole = Role::all()
+            $listRole = Category::all()
                 ->whereNull('deleted_at');
 
             return $this->responseData($listRole);
@@ -34,80 +32,94 @@ class RoleController extends Controller
     }
 
     /**
-     * Get role by id
+     * Get category by id
      *
-     * @param $role
+     * @param $category
      * @return JsonResponse
      */
-    public function getById($role): JsonResponse
+    public function getById($category): JsonResponse
     {
         try {
-            return $this->responseData(Role::findOrFail($role));
+            return $this->responseData(Category::findOrFail($category));
         } catch (ModelNotFoundException $exception){
             return $this->sendMessage('Không tìm thấy', 404);
         }
     }
 
     /**
-     * Create new role
+     * Create new category
      *
-     * @param RoleRequest $request
+     * @param CategoryRequest $request
      * @return JsonResponse
      */
-    public function store(RoleRequest $request): JsonResponse
+    public function store(CategoryRequest $request): JsonResponse
     {
         try {
             $fields = $request->all();
+            $slug = Str::slug($fields['category_name']);
+            $icon = null;
+            if (isset($fields['icon'])){
+                $icon = $fields['icon'];
+            }
 
-            Role::create([
-                'role_name' => $fields['role_name'],
+            Category::create([
+                'category_name' => $fields['category_name'],
+                'icon' => $icon,
+                'slug' => $slug,
                 'created_at' => Carbon::now('Asia/Ho_Chi_Minh'),
                 'created_by' => Auth::id()
             ]);
 
             return $this->sendMessage('Tạo thành công');
-        } catch (QueryException $exception){
+        } catch (Exception $exception){
             return $this->sendError500();
         }
     }
 
     /**
-     * Update role by id
+     * Update category by id
      *
-     * @param RoleRequest $request
-     * @param $role
+     * @param CategoryRequest $request
+     * @param $category
      * @return JsonResponse
      */
-    public function update(RoleRequest $request, $role): JsonResponse
+    public function update(CategoryRequest $request, $category): JsonResponse
     {
         try {
             $fields = $request->all();
+            $slug = Str::slug($fields['category_name']);
+            $icon = null;
+            if (isset($fields['icon'])){
+                $icon = $fields['icon'];
+            }
 
-            $isUpdate = Role::where('id', $role)->update([
-                'role_name' => $fields['role_name'],
+            $isUpdate = Category::where('id', $category)->update([
+                'category_name' => $fields['category_name'],
+                'icon' => $icon,
+                'slug' => $slug,
                 'updated_at' => Carbon::now('Asia/Ho_Chi_Minh'),
                 'updated_by' => Auth::id()
             ]);
             if (!$isUpdate){
-                return $this->sendMessage('Không tìm thấy', 404);
+                return $this->sendMessage('Không tìm thấy');
             }
             return $this->sendMessage('Cập nhật thành công');
-        } catch (QueryException $exception){
+        } catch (Exception $exception){
             return $this->sendError500();
         }
     }
 
     /**
-     * Delete role by id
+     * Delete category by id
      *
-     * @param $role
+     * @param $category
      * @return JsonResponse
      */
-    public function destroy($role): JsonResponse
+    public function destroy($category): JsonResponse
     {
         try {
             try {
-                $result = Role::findOrFail($role);
+                $result = Category::findOrFail($category);
             } catch (ModelNotFoundException $exception){
                 return $this->sendMessage('Không tìm thấy', 404);
             }
@@ -124,19 +136,18 @@ class RoleController extends Controller
     }
 
     /**
-     * Disable role
+     * Disable category by id
      *
-     * @param $role
+     * @param $category
      * @return JsonResponse
      */
-    public function disable($role): JsonResponse
+    public function disable($category): JsonResponse
     {
         try {
             try {
-                $result = Role::findOrFail($role);
+                $result = Category::findOrFail($category);
             } catch (ModelNotFoundException $exception){
-                $exception = 'Không tìm thấy';
-                return $this->sendError500($exception);
+                return $this->sendMessage('Không tìm thấy', 404);
             }
 
             if ($result->disabled == 0) {
