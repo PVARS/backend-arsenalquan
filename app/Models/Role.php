@@ -28,4 +28,10 @@ class Role extends Model
     ];
 
     protected $hidden = [];
+
+    protected $casts = [
+        'created_at' => 'date:d-m-Y H:i:s',
+        'updated_at' => 'date:d-m-Y H:i:s',
+        'deleted_at' => 'date:d-m-Y H:i:s',
+    ];
 }

@@ -5,8 +5,7 @@ namespace App\Http\Controllers\api\admin;
 
 
 use App\Http\Controllers\Controller;
-use App\Http\Request\Role\StoreRoleRequest;
-use App\Http\Request\Role\UpdateRoleRequest;
+use App\Http\Request\Role\RoleRequest;
 use App\Models\Role;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -26,8 +25,7 @@ class RoleController extends Controller
     {
         try {
             $listRole = Role::all()
-                ->whereNull('deleted_at')
-                ->where('disabled', '=', 0);
+                ->whereNull('deleted_at');
 
             return $this->responseData($listRole);
         } catch (Exception $exception){
@@ -46,18 +44,17 @@ class RoleController extends Controller
         try {
             return $this->responseData(Role::findOrFail($role));
         } catch (ModelNotFoundException $exception){
-            $exception = 'Không tìm thấy';
-            return $this->sendError500($exception);
+            return $this->sendError500('Không tìm thấy');
         }
     }
 
     /**
      * Create new role
      *
-     * @param StoreRoleRequest $request
+     * @param RoleRequest $request
      * @return JsonResponse
      */
-    public function store(StoreRoleRequest $request): JsonResponse
+    public function store(RoleRequest $request): JsonResponse
     {
         try {
             $fields = $request->all();
@@ -77,11 +74,11 @@ class RoleController extends Controller
     /**
      * Update role by id
      *
-     * @param UpdateRoleRequest $request
+     * @param RoleRequest $request
      * @param $role
      * @return JsonResponse
      */
-    public function update(UpdateRoleRequest $request, $role): JsonResponse
+    public function update(RoleRequest $request, $role): JsonResponse
     {
         try {
             $fields = $request->all();
@@ -145,11 +142,8 @@ class RoleController extends Controller
                 $message = 'Mở khoá thành công';
             }
 
-            Role::where('id', $role)->update([
-                'disabled' => $status
-            ]);
-
-            return $this->sendMessage($message);
+            if ($result->update(['disabled' => $status]))
+                return $this->sendMessage($message);
         } catch (Exception $exception){
             return $this->sendError500();
         }
