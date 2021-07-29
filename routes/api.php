@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\admin\AuthController;
 use App\Http\Controllers\api\admin\RoleController;
 use App\Http\Controllers\api\admin\UserController;
+use App\Http\Controllers\api\admin\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +43,20 @@ Route::group(['prefix'=>'v1/admin'], function (){
             Route::post('/', [UserController::class, 'register']);
             Route::put('/{user}', [UserController::class, 'update']);
             Route::get('/disable/{user}', [UserController::class, 'disable']);
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | API Category
+        |--------------------------------------------------------------------------
+        */
+        Route::group(['prefix'=>'category'], function (){
+            Route::get('/', [CategoryController::class, 'findAll']);
+            Route::get('/{category}', [CategoryController::class, 'getById']);
+            Route::post('/', [CategoryController::class, 'store']);
+            Route::put('/{category}', [CategoryController::class, 'update']);
+            Route::delete('/{category}', [CategoryController::class, 'destroy']);
+            Route::get('/disable/{category}', [CategoryController::class, 'disable']);
         });
     };
 
