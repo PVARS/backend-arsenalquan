@@ -21,14 +21,19 @@ class Category extends Model
         'category_name',
         'slug',
         'icon',
-        'disabled'
-    ];
-
-    protected $hidden = [
+        'disabled',
         'created_at',
         'updated_at',
         'created_by',
         'updated_by',
         'deleted_at'
+    ];
+
+    protected $hidden = [];
+
+    protected $casts = [
+        'created_at' => 'date:d-m-Y H:i:s',
+        'updated_at' => 'date:d-m-Y H:i:s',
+        'deleted_at' => 'date:d-m-Y H:i:s',
     ];
 }
