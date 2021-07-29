@@ -6,7 +6,7 @@ namespace App\Http\Request\Role;
 
 use App\Http\Request\HttpRequest;
 
-class StoreRoleRequest extends HttpRequest
+class RoleRequest extends HttpRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +26,7 @@ class StoreRoleRequest extends HttpRequest
     public function rules(): array
     {
         return [
-            'role_name' => 'required|max:254'
+            'role_name' => 'required|max:254|unique:role,role_name,'.$this->role
         ];
     }
 
@@ -37,7 +37,8 @@ class StoreRoleRequest extends HttpRequest
     {
         return [
             'role_name.required' => 'Vui lòng nhập tên vai trò.',
-            'role_name.max' => 'Tên đăng nhập không được quá 254 ký tự.'
+            'role_name.max' => 'Tên vai trò không được quá 254 ký tự.',
+            'role_name.unique' => 'Vai trò này đã tồn tại'
         ];
     }
 
