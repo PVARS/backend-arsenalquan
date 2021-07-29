@@ -44,7 +44,7 @@ class RoleController extends Controller
         try {
             return $this->responseData(Role::findOrFail($role));
         } catch (ModelNotFoundException $exception){
-            return $this->sendError500('Không tìm thấy');
+            return $this->sendMessage('Không tìm thấy', 404);
         }
     }
 
@@ -89,7 +89,7 @@ class RoleController extends Controller
                 'updated_by' => Auth::id()
             ]);
             if (!$isUpdate){
-                return $this->sendMessage('Không tìm thấy');
+                return $this->sendMessage('Không tìm thấy', 404);
             }
             return $this->sendMessage('Cập nhật thành công');
         } catch (QueryException $exception){
@@ -106,14 +106,19 @@ class RoleController extends Controller
     public function destroy($role): JsonResponse
     {
         try {
-            $isDelete = Role::where('id', $role)->update([
-                'deleted_at' => Carbon::now('Asia/Ho_Chi_Minh'),
-            ]);
-            if (!$isDelete){
-                return $this->sendMessage('Không tìm thấy');
+            try {
+                $result = Role::findOrFail($role);
+            } catch (ModelNotFoundException $exception){
+                return $this->sendMessage('Không tìm thấy', 404);
             }
-            return $this->sendMessage('Xoá thành công');
-        } catch (QueryException $exception){
+
+            if ($result->deleted_at){
+                return $this->sendMessage('Không tìm thấy', 404);
+            }
+
+            if ($result->update(['deleted_at' => Carbon::now('Asia/Ho_Chi_Minh')]))
+                return $this->sendMessage('Xoá thành công');
+        } catch (Exception $exception){
             return $this->sendError500();
         }
     }
@@ -133,8 +138,8 @@ class RoleController extends Controller
                 $exception = 'Không tìm thấy';
                 return $this->sendError500($exception);
             }
-            $status = $result->disabled;
-            if ($status == 0) {
+
+            if ($result->disabled == 0) {
                 $status = 1;
                 $message = 'Khoá thành công';
             } else {
