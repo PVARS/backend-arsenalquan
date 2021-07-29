@@ -1,8 +1,10 @@
 <?php
 
 
-namespace App\Http\Request;
+namespace App\Http\Request\User;
 
+
+use App\Http\Request\HttpRequest;
 
 class LoginRequest extends HttpRequest
 {
