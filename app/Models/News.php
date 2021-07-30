@@ -25,10 +25,7 @@ class News extends Model
         'view',
         'slug',
         'approve',
-        'approved_by'
-    ];
-
-    protected $hidden = [
+        'approved_by',
         'created_at',
         'updated_at',
         'created_by',
@@ -36,7 +33,14 @@ class News extends Model
         'deleted_at'
     ];
 
+    protected $hidden = [
+
+    ];
+
     protected $casts = [
-        'key_word' => 'array'
+        'key_word' => 'array',
+        'created_at' => 'date:d-m-Y H:i:s',
+        'updated_at' => 'date:d-m-Y H:i:s',
+        'deleted_at' => 'date:d-m-Y H:i:s',
     ];
 }

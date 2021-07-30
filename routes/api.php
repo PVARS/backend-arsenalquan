@@ -5,6 +5,7 @@ use App\Http\Controllers\api\admin\AuthController;
 use App\Http\Controllers\api\admin\RoleController;
 use App\Http\Controllers\api\admin\UserController;
 use App\Http\Controllers\api\admin\CategoryController;
+use App\Http\Controllers\api\admin\NewsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +59,22 @@ Route::group(['prefix'=>'v1/admin'], function (){
             Route::put('/{category}', [CategoryController::class, 'update']);
             Route::delete('/{category}', [CategoryController::class, 'destroy']);
             Route::get('/disable/{category}', [CategoryController::class, 'disable']);
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | API News
+        |--------------------------------------------------------------------------
+        */
+        Route::group(['prefix'=>'news'], function (){
+            Route::get('/', [NewsController::class, 'findAll']);
+            Route::get('/pending', [NewsController::class, 'findPendingNews']);
+            Route::get('/{news}', [NewsController::class, 'getById']);
+            Route::post('/', [NewsController::class, 'store']);
+            Route::put('/{news}', [NewsController::class, 'update']);
+            Route::delete('/{news}', [NewsController::class, 'destroy']);
+            Route::get('/disable/{news}', [NewsController::class, 'disable']);
+            Route::get('/approve/{news}', [NewsController::class, 'approve']);
         });
     };
 
