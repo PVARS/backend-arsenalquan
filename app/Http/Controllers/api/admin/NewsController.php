@@ -17,9 +17,10 @@ class NewsController extends Controller
     public function findAll(): JsonResponse
     {
         try {
-            $listNews = News::all()
-                ->whereNull('deleted_at')
-                ->where('approve', '=', true);
+            $listNews = News::whereNull('deleted_at')
+                ->where('approve', '=', true)
+                ->orderby('created_at', 'desc')
+                ->get();
 
             return $this->responseData($listNews);
         } catch (Exception $exception){
@@ -30,9 +31,10 @@ class NewsController extends Controller
     public function findPendingNews(): JsonResponse
     {
         try {
-            $listNews = News::all()
-                ->whereNull('deleted_at')
-                ->where('approve', '=', false);
+            $listNews = News::whereNull('deleted_at')
+                ->where('approve', '=', false)
+                ->orderBy('created_at', 'asc')
+                ->get();
 
             return $this->responseData($listNews);
         } catch (Exception $exception){
@@ -46,6 +48,19 @@ class NewsController extends Controller
             return $this->responseData(News::findOrFail($news));
         } catch (ModelNotFoundException $exception){
             return $this->sendMessage('Không tìm thấy', 404);
+        }
+    }
+
+    public function findNewsByCategory($category): JsonResponse
+    {
+        try {
+            $listNews = News::join('category', 'news.category_id', '=', 'category.id')
+                ->where('news.category_id', $category)
+                ->orderBy('news.created_at', 'desc')
+                ->get();
+            return $this->responseData($listNews);
+        } catch (Exception $exception){
+            return $this->sendError500();
         }
     }
 
