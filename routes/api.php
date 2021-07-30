@@ -75,6 +75,7 @@ Route::group(['prefix'=>'v1/admin'], function (){
             Route::delete('/{news}', [NewsController::class, 'destroy']);
             Route::get('/disable/{news}', [NewsController::class, 'disable']);
             Route::get('/approve/{news}', [NewsController::class, 'approve']);
+            Route::get('/category/{category}', [NewsController::class, 'findNewsByCategory']);
         });
     };
 
