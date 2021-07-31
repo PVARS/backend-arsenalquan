@@ -14,6 +14,11 @@ use Illuminate\Support\Facades\Auth;
 
 class NewsController extends Controller
 {
+    /**
+     * Get all news
+     *
+     * @return JsonResponse
+     */
     public function findAll(): JsonResponse
     {
         try {
@@ -28,6 +33,11 @@ class NewsController extends Controller
         }
     }
 
+    /**
+     * Get all pending news
+     *
+     * @return JsonResponse
+     */
     public function findPendingNews(): JsonResponse
     {
         try {
@@ -42,6 +52,12 @@ class NewsController extends Controller
         }
     }
 
+    /**
+     * Get news by id
+     *
+     * @param $news
+     * @return JsonResponse
+     */
     public function getById($news): JsonResponse
     {
         try {
@@ -51,6 +67,12 @@ class NewsController extends Controller
         }
     }
 
+    /**
+     * Filter news by category
+     *
+     * @param $category
+     * @return JsonResponse
+     */
     public function findNewsByCategory($category): JsonResponse
     {
         try {
@@ -64,6 +86,12 @@ class NewsController extends Controller
         }
     }
 
+    /**
+     * Create new post
+     *
+     * @param NewsRequest $request
+     * @return JsonResponse
+     */
     public function store(NewsRequest $request): JsonResponse
     {
         try {
@@ -100,6 +128,13 @@ class NewsController extends Controller
         }
     }
 
+    /**
+     * Update news by id
+     *
+     * @param NewsRequest $request
+     * @param $news
+     * @return JsonResponse
+     */
     public function update(NewsRequest $request, $news): JsonResponse
     {
         try {
@@ -138,6 +173,12 @@ class NewsController extends Controller
         }
     }
 
+    /**
+     * Approve news
+     *
+     * @param $news
+     * @return JsonResponse
+     */
     public function approve($news): JsonResponse
     {
         try {
@@ -158,6 +199,12 @@ class NewsController extends Controller
         }
     }
 
+    /**
+     * Delete news by id
+     *
+     * @param $news
+     * @return JsonResponse
+     */
     public function destroy($news): JsonResponse
     {
         try {
