@@ -86,4 +86,15 @@ class Controller extends BaseController
     {
         return response()->json($arr);
     }
+
+    /**
+     * @param $className
+     * @param $item
+     * @param null $other
+     * @return mixed
+     */
+    public function formatJson($className, $item, $other = NULL)
+    {
+        return new $className($item, $other);
+    }
 }
