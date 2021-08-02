@@ -22,12 +22,12 @@ class NewsController extends Controller
     public function findAll(): JsonResponse
     {
         try {
-            $listNews = News::whereNull('deleted_at')
+            $result = News::whereNull('deleted_at')
                 ->where('approve', '=', true)
                 ->orderby('created_at', 'desc')
                 ->get();
 
-            return $this->responseData($listNews);
+            return $this->responseData($result);
         } catch (Exception $exception){
             return $this->sendError500();
         }
@@ -41,12 +41,12 @@ class NewsController extends Controller
     public function findPendingNews(): JsonResponse
     {
         try {
-            $listNews = News::whereNull('deleted_at')
+            $result = News::whereNull('deleted_at')
                 ->where('approve', '=', false)
                 ->orderBy('created_at', 'asc')
                 ->get();
 
-            return $this->responseData($listNews);
+            return $this->responseData($result);
         } catch (Exception $exception){
             return $this->sendError500();
         }
@@ -76,11 +76,29 @@ class NewsController extends Controller
     public function findNewsByCategory($category): JsonResponse
     {
         try {
-            $listNews = News::join('category', 'news.category_id', '=', 'category.id')
+            $result = News::join('category', 'news.category_id', '=', 'category.id')
                 ->where('news.category_id', $category)
                 ->orderBy('news.created_at', 'desc')
                 ->get();
-            return $this->responseData($listNews);
+            return $this->responseData($result);
+        } catch (Exception $exception){
+            return $this->sendError500();
+        }
+    }
+
+    /**
+     * List news in recycle bin
+     *
+     * @return JsonResponse
+     */
+    public function recycleBin(): JsonResponse
+    {
+        try {
+            $result = News::whereNotNull('deleted_at')
+                ->orderby('deleted_at', 'asc')
+                ->get();
+
+            return $this->responseData($result);
         } catch (Exception $exception){
             return $this->sendError500();
         }
@@ -108,7 +126,7 @@ class NewsController extends Controller
                 return $this->sendMessage('Không tìm thấy danh mục', 404);
             }
 
-            News::create([
+            $result = News::create([
                 'category_id' => $fields['category_id'],
                 'title' => $fields['title'],
                 'short_description' => $fields['short_description'],
@@ -121,6 +139,9 @@ class NewsController extends Controller
                 'created_at' => Carbon::now('Asia/Ho_Chi_Minh'),
                 'created_by' => Auth::id()
             ]);
+            if (!$result){
+                return $this->sendMessage('Thêm thất bại', 400);
+            }
 
             return $this->sendMessage('Tạo thành công');
         } catch (Exception $exception){
@@ -151,7 +172,7 @@ class NewsController extends Controller
                 return $this->sendMessage('Không tìm thấy danh mục', 404);
             }
 
-            $isUpdate = News::where('id', $news)->update([
+            $result = News::where('id', $news)->update([
                 'category_id' => $fields['category_id'],
                 'title' => $fields['title'],
                 'short_description' => $fields['short_description'],
@@ -164,7 +185,7 @@ class NewsController extends Controller
                 'updated_at' => Carbon::now('Asia/Ho_Chi_Minh'),
                 'updated_by' => Auth::id()
             ]);
-            if (!$isUpdate){
+            if (!$result){
                 return $this->sendMessage('Không tìm thấy');
             }
             return $this->sendMessage('Cập nhật thành công');

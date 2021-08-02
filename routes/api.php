@@ -68,14 +68,14 @@ Route::group(['prefix'=>'v1/admin'], function (){
         */
         Route::group(['prefix'=>'news'], function (){
             Route::get('/', [NewsController::class, 'findAll']);
+            Route::get('/category/{category}', [NewsController::class, 'findNewsByCategory']);
             Route::get('/pending', [NewsController::class, 'findPendingNews']);
+            Route::get('/approve/{news}', [NewsController::class, 'approve']);
+            Route::get('/recycle-bin', [NewsController::class, 'recycleBin']);
             Route::get('/{news}', [NewsController::class, 'getById']);
             Route::post('/', [NewsController::class, 'store']);
             Route::put('/{news}', [NewsController::class, 'update']);
             Route::delete('/{news}', [NewsController::class, 'destroy']);
-            Route::get('/disable/{news}', [NewsController::class, 'disable']);
-            Route::get('/approve/{news}', [NewsController::class, 'approve']);
-            Route::get('/category/{category}', [NewsController::class, 'findNewsByCategory']);
         });
     };
 
