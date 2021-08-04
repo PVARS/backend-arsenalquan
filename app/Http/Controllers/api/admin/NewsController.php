@@ -4,7 +4,9 @@ namespace App\Http\Controllers\api\admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Request\News\NewsRequest;
-use App\Http\Resources\admin\news\NewsFindAllCollection;
+use App\Http\Resources\admin\news\NewsRecycleBinCollection;
+use App\Http\Resources\admin\news\NewsGetAllCollection;
+use App\Http\Resources\admin\news\NewsRecycleBinResource;
 use App\Models\News;
 use Carbon\Carbon;
 use Exception;
@@ -32,7 +34,7 @@ class NewsController extends Controller
                 ->select('news.*', 'category.category_name', 'user.login_id')
                 ->get();
 
-            return $this->responseData($this->formatJson(NewsFindAllCollection::class, $result));
+            return $this->responseData($this->formatJson(NewsGetAllCollection::class, $result));
         } catch (Exception $exception){
             return $this->sendError500();
         }
@@ -56,7 +58,7 @@ class NewsController extends Controller
                 ->select('news.*', 'category.category_name', 'user.login_id')
                 ->get();
 
-            return $this->responseData($this->formatJson(NewsFindAllCollection::class, $result));
+            return $this->responseData($this->formatJson(NewsGetAllCollection::class, $result));
         } catch (Exception $exception){
             return $this->sendError500();
         }
@@ -81,7 +83,7 @@ class NewsController extends Controller
                 ->select('news.*', 'category.category_name', 'user.login_id')
                 ->get();
 
-            return $this->responseData($this->formatJson(NewsFindAllCollection::class, $result));
+            return $this->responseData($this->formatJson(NewsGetAllCollection::class, $result));
         } catch (Exception $exception){
             return $this->sendError500();
         }
@@ -107,7 +109,7 @@ class NewsController extends Controller
                 ->select('news.*', 'category.category_name', 'user.login_id')
                 ->get();
 
-            return $this->responseData($this->formatJson(NewsFindAllCollection::class, $result));
+            return $this->responseData($this->formatJson(NewsGetAllCollection::class, $result));
         } catch (Exception $exception){
             return $this->sendError500();
         }
@@ -130,7 +132,7 @@ class NewsController extends Controller
                 ->select('news.*', 'category.category_name', 'user.login_id')
                 ->get();
 
-            return $this->responseData($this->formatJson(NewsFindAllCollection::class, $result));
+            return $this->responseData($this->formatJson(NewsRecycleBinCollection::class, $result));
         } catch (Exception $exception){
             return $this->sendError500();
         }

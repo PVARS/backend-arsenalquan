@@ -4,10 +4,10 @@ namespace App\Http\Resources\admin\news;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class NewsFindAllResource extends JsonResource
+class NewsRecycleBinResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * Transform the resource collection into an array.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return array
@@ -32,7 +32,8 @@ class NewsFindAllResource extends JsonResource
             'approve' => $approve,
             'approved_by' => $this->approved_by,
             'created_at' => $this->created_at->format('d-m-Y H:i:s'),
-            'created_by' => $this->login_id
+            'created_by' => $this->login_id,
+            'deleted_at' => $this->deleted_at
         ];
     }
 }

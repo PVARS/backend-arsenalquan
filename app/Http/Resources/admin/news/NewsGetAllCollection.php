@@ -4,7 +4,7 @@ namespace App\Http\Resources\admin\news;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class NewsFindAllCollection extends ResourceCollection
+class NewsGetAllCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.
@@ -12,7 +12,7 @@ class NewsFindAllCollection extends ResourceCollection
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public $collects = NewsFindAllResource::class;
+    public $collects = NewsGetAllResource::class;
     public function toArray($request)
     {
         return $this->collection;
