@@ -33,14 +33,5 @@ class News extends Model
         'deleted_at'
     ];
 
-    protected $hidden = [
-
-    ];
-
-    protected $casts = [
-        'key_word' => 'array',
-        'created_at' => 'date:d-m-Y H:i:s',
-        'updated_at' => 'date:d-m-Y H:i:s',
-        'deleted_at' => 'date:d-m-Y H:i:s',
-    ];
+    protected $hidden = [];
 }

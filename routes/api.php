@@ -72,6 +72,7 @@ Route::group(['prefix'=>'v1/admin'], function (){
             Route::get('/pending', [NewsController::class, 'findPendingNews']);
             Route::get('/approve/{news}', [NewsController::class, 'approve']);
             Route::get('/recycle-bin', [NewsController::class, 'recycleBin']);
+            Route::get('/restore/{news}', [NewsController::class, 'restore']);
             Route::get('/{news}', [NewsController::class, 'getById']);
             Route::post('/', [NewsController::class, 'store']);
             Route::put('/{news}', [NewsController::class, 'update']);
