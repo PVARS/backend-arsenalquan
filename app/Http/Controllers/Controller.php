@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -96,5 +97,30 @@ class Controller extends BaseController
     public function formatJson($className, $item, $other = NULL)
     {
         return new $className($item, $other);
+    }
+
+    /**
+     * Find category
+     *
+     * @param $category
+     * @return bool
+     */
+    public function findCategory($category): bool
+    {
+        $categoryId = null;
+
+        $resultCategory = Category::whereNull('deleted_at')
+            ->where('category.disabled', false)
+            ->where('id', $category)
+            ->get();
+
+        foreach ($resultCategory as $v){
+            $categoryId = $v['id'];
+        }
+
+        if (!$categoryId){
+            return false;
+        }
+        return true;
     }
 }
