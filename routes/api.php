@@ -54,11 +54,13 @@ Route::group(['prefix'=>'v1/admin'], function (){
         */
         Route::group(['prefix'=>'category'], function (){
             Route::get('/', [CategoryController::class, 'findAll']);
+            Route::get('/restore/{category}', [CategoryController::class, 'restore']);
+            Route::get('/disable/{category}', [CategoryController::class, 'disable']);
+            Route::get('/recycle-bin', [CategoryController::class, 'recycleBin']);
             Route::get('/{category}', [CategoryController::class, 'getById']);
             Route::post('/', [CategoryController::class, 'store']);
             Route::put('/{category}', [CategoryController::class, 'update']);
             Route::delete('/{category}', [CategoryController::class, 'destroy']);
-            Route::get('/disable/{category}', [CategoryController::class, 'disable']);
         });
 
         /*
