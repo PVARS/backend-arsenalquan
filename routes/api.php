@@ -40,10 +40,12 @@ Route::group(['prefix'=>'v1/admin'], function (){
         Route::group(['prefix'=>'user'], function (){
             Route::get('logout', [AuthController::class, 'logout']);
             Route::get('/', [UserController::class, 'findAll']);
+            Route::get('/disable/{user}', [UserController::class, 'disable']);
+            Route::get('/restore/{user}', [UserController::class, 'restore']);
+            Route::get('/recycle-bin', [UserController::class, 'recycleBin']);
             Route::get('/{user}', [UserController::class, 'getById']);
             Route::post('/', [UserController::class, 'register']);
             Route::put('/{user}', [UserController::class, 'update']);
-            Route::get('/disable/{user}', [UserController::class, 'disable']);
             Route::delete('/{user}', [UserController::class, 'destroy']);
         });
 

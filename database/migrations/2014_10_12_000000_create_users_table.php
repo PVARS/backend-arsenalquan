@@ -24,8 +24,8 @@ class CreateUsersTable extends Migration
             $table->text('reset_link_token')->nullable();
             $table->text('token')->nullable();
             $table->timestamps();
-            $table->bigInteger('created_by')->nullable();
-            $table->bigInteger('updated_by')->nullable();
+            $table->string('created_by')->nullable();
+            $table->string('updated_by')->nullable();
             $table->softDeletes();
         });
     }
