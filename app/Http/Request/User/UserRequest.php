@@ -5,7 +5,6 @@ namespace App\Http\Request\User;
 
 
 use App\Http\Request\HttpRequest;
-use App\Models\User;
 
 class UserRequest extends HttpRequest
 {
