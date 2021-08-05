@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Request\News\NewsRequest;
 use App\Http\Resources\admin\news\NewsRecycleBinCollection;
 use App\Http\Resources\admin\news\NewsGetAllCollection;
-use App\Http\Resources\admin\news\NewsRecycleBinResource;
 use App\Models\News;
 use Carbon\Carbon;
 use Exception;
@@ -28,7 +27,6 @@ class NewsController extends Controller
                 ->join('user', 'user.id', '=', 'news.created_by')
                 ->whereNull('news.deleted_at')
                 ->where('news.approve', '=', true)
-                ->where('category.disabled', false)
                 ->whereNull('category.deleted_at')
                 ->orderby('news.created_at', 'desc')
                 ->select('news.*', 'category.category_name', 'user.login_id')
@@ -52,7 +50,6 @@ class NewsController extends Controller
                 ->join('user', 'user.id', '=', 'news.created_by')
                 ->whereNull('news.deleted_at')
                 ->where('news.approve', '=', false)
-                ->where('category.disabled', false)
                 ->whereNull('category.deleted_at')
                 ->orderBy('news.created_at', 'asc')
                 ->select('news.*', 'category.category_name', 'user.login_id')
@@ -77,7 +74,6 @@ class NewsController extends Controller
                 ->join('user', 'user.id', '=', 'news.created_by')
                 ->whereNull('news.deleted_at')
                 ->where('news.id', $news)
-                ->where('category.disabled', false)
                 ->whereNull('category.deleted_at')
                 ->orderBy('news.created_at', 'asc')
                 ->select('news.*', 'category.category_name', 'user.login_id')
@@ -103,7 +99,6 @@ class NewsController extends Controller
                 ->whereNull('news.deleted_at')
                 ->where('news.category_id', $category)
                 ->where('news.approve', '=', true)
-                ->where('category.disabled', false)
                 ->whereNull('category.deleted_at')
                 ->orderBy('news.created_at', 'desc')
                 ->select('news.*', 'category.category_name', 'user.login_id')
@@ -126,7 +121,6 @@ class NewsController extends Controller
             $result = News::join('category', 'news.category_id', '=', 'category.id')
                 ->join('user', 'user.id', '=', 'news.created_by')
                 ->whereNotNull('news.deleted_at')
-                ->where('category.disabled', false)
                 ->whereNull('category.deleted_at')
                 ->orderby('news.deleted_at', 'asc')
                 ->select('news.*', 'category.category_name', 'user.login_id')
@@ -298,14 +292,18 @@ class NewsController extends Controller
      */
     public function restore($news): JsonResponse
     {
-        $result = News::whereNotNull('deleted_at')
-            ->where('id', $news)
-            ->update(['deleted_at' => null]);
+        try {
+            $result = News::whereNotNull('deleted_at')
+                ->where('id', $news)
+                ->update(['deleted_at' => null]);
 
-        if (!$result){
-            return $this->sendMessage('Không tìm thấy! Bài viết có thể đã được khôi phục', 404);
+            if (!$result){
+                return $this->sendMessage('Không tìm thấy! Bài viết có thể đã được khôi phục', 404);
+            }
+
+            return $this->sendMessage('Đã khôi phục bài viết');
+        } catch (Exception $exception){
+            return $this->sendError500();
         }
-
-        return $this->sendMessage('Đã khôi phục bài viết');
     }
 }
