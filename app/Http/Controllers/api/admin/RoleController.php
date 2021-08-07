@@ -6,12 +6,13 @@ namespace App\Http\Controllers\api\admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Request\Role\RoleRequest;
+use App\Http\Resources\admin\role\RoleGetAllCollection;
+use App\Http\Resources\admin\role\RoleRecycleBinCollection;
 use App\Models\Role;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Exception;
 
 class RoleController extends Controller
@@ -24,10 +25,30 @@ class RoleController extends Controller
     public function findAll(): JsonResponse
     {
         try {
-            $listRole = Role::all()
-                ->whereNull('deleted_at');
+            $result = Role::whereNull('deleted_at')
+                ->orderby('id', 'asc')
+                ->orderby('disabled', 'asc')
+                ->get();
 
-            return $this->responseData($listRole);
+            return $this->responseData($this->formatJson(RoleGetAllCollection::class, $result));
+        } catch (Exception $exception){
+            return $this->sendError500();
+        }
+    }
+
+    /**
+     * List role in recycle bin
+     *
+     * @return JsonResponse
+     */
+    public function recycleBin(): JsonResponse
+    {
+        try {
+            $result = Role::whereNotNull('deleted_at')
+                ->orderby('deleted_at', 'desc')
+                ->get();
+
+            return $this->responseData($this->formatJson(RoleRecycleBinCollection::class, $result));
         } catch (Exception $exception){
             return $this->sendError500();
         }
@@ -42,7 +63,13 @@ class RoleController extends Controller
     public function getById($role): JsonResponse
     {
         try {
-            return $this->responseData(Role::findOrFail($role));
+            $result = Role::whereNull('deleted_at')
+                ->where('id', $role)
+                ->orderby('id', 'asc')
+                ->orderby('disabled', 'asc')
+                ->get();
+
+            return $this->responseData($this->formatJson(RoleGetAllCollection::class, $result));
         } catch (ModelNotFoundException $exception){
             return $this->sendMessage('Không tìm thấy', 404);
         }
@@ -62,10 +89,10 @@ class RoleController extends Controller
             Role::create([
                 'role_name' => $fields['role_name'],
                 'created_at' => Carbon::now('Asia/Ho_Chi_Minh'),
-                'created_by' => Auth::id()
+                'created_by' => auth()->user()->login_id
             ]);
 
-            return $this->sendMessage('Tạo thành công');
+            return $this->sendMessage('Tạo thành công', 201);
         } catch (QueryException $exception){
             return $this->sendError500();
         }
@@ -83,12 +110,13 @@ class RoleController extends Controller
         try {
             $fields = $request->all();
 
-            $isUpdate = Role::where('id', $role)->update([
+            $result = Role::where('id', $role)->update([
                 'role_name' => $fields['role_name'],
                 'updated_at' => Carbon::now('Asia/Ho_Chi_Minh'),
-                'updated_by' => Auth::id()
+                'updated_by' => auth()->user()->login_id
             ]);
-            if (!$isUpdate){
+
+            if (!$result){
                 return $this->sendMessage('Không tìm thấy', 404);
             }
             return $this->sendMessage('Cập nhật thành công');
@@ -106,18 +134,15 @@ class RoleController extends Controller
     public function destroy($role): JsonResponse
     {
         try {
-            try {
-                $result = Role::findOrFail($role);
-            } catch (ModelNotFoundException $exception){
-                return $this->sendMessage('Không tìm thấy', 404);
+            $result = Role::whereNull('deleted_at')
+                ->where('id', $role)
+                ->update(['deleted_at' => Carbon::now('Asia/Ho_Chi_Minh')]);
+
+            if (!$result){
+                return $this->sendMessage('Không tìm thấy vai trò', 404);
             }
 
-            if ($result->deleted_at){
-                return $this->sendMessage('Không tìm thấy', 404);
-            }
-
-            if ($result->update(['deleted_at' => Carbon::now('Asia/Ho_Chi_Minh')]))
-                return $this->sendMessage('Xoá thành công');
+            return $this->sendMessage('Xoá thành công');
         } catch (Exception $exception){
             return $this->sendError500();
         }
@@ -135,20 +160,45 @@ class RoleController extends Controller
             try {
                 $result = Role::findOrFail($role);
             } catch (ModelNotFoundException $exception){
-                $exception = 'Không tìm thấy';
-                return $this->sendError500($exception);
+                return $this->sendMessage('Vai trò không tồn tại', 404);
             }
 
             if ($result->disabled == 0) {
-                $status = 1;
-                $message = 'Khoá thành công';
+                $status = true;
+                $message = 'Đã khoá';
             } else {
-                $status = 0;
+                $status = false;
                 $message = 'Mở khoá thành công';
             }
 
-            if ($result->update(['disabled' => $status]))
-                return $this->sendMessage($message);
+            Role::whereNull('deleted_at')
+                ->where('id', $role)
+                ->update(['disabled' => $status]);
+
+            return $this->sendMessage($message);
+        } catch (Exception $exception){
+            return $this->sendError500();
+        }
+    }
+
+    /**
+     * Restore role in recycle bin
+     *
+     * @param $category
+     * @return JsonResponse
+     */
+    public function restore($role): JsonResponse
+    {
+        try {
+            $result = Role::whereNotNull('deleted_at')
+                ->where('id', $role)
+                ->update(['deleted_at' => null]);
+
+            if (!$result){
+                return $this->sendMessage('Không tìm thấy! Vai trò có thể đã được khôi phục', 404);
+            }
+
+            return $this->sendMessage('Đã khôi phục vai trò');
         } catch (Exception $exception){
             return $this->sendError500();
         }

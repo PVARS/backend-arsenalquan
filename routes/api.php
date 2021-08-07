@@ -25,6 +25,8 @@ Route::group(['prefix'=>'v1/admin'], function (){
         */
         Route::group(['prefix'=>'role'], function (){
             Route::get('/', [RoleController::class, 'findAll']);
+            Route::get('/restore/{role}', [RoleController::class, 'restore']);
+            Route::get('/recycle-bin', [RoleController::class, 'recycleBin']);
             Route::get('/{role}', [RoleController::class, 'getById']);
             Route::post('/', [RoleController::class, 'store']);
             Route::put('/{role}', [RoleController::class, 'update']);
