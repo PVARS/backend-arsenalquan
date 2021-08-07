@@ -18,8 +18,8 @@ class CreateRolesTable extends Migration
             $table->string('role_name')->unique();
             $table->boolean('disabled')->default(false);
             $table->timestamps();
-            $table->bigInteger('created_by')->nullable()->unsigned();
-            $table->bigInteger('updated_by')->nullable();
+            $table->string('created_by')->default('SYSTEM');
+            $table->string('updated_by')->nullable();
             $table->softDeletes();
         });
     }

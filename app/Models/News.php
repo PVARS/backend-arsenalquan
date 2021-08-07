@@ -34,4 +34,8 @@ class News extends Model
     ];
 
     protected $hidden = [];
+
+    protected $casts = [
+        'key_word' => 'array'
+    ];
 }
