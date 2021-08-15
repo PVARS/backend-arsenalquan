@@ -53,9 +53,9 @@ class Controller extends BaseController
      *
      * @return JsonResponse
      */
-    public function forbidden(): JsonResponse
+    public function forbidden($msg = 'Bạn không có quyền truy cập!'): JsonResponse
     {
-        return response()->json(['message'=>'Forbidden'], 403);
+        return response()->json(['message' => $msg], 403);
     }
 
     /**
