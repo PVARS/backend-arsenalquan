@@ -109,7 +109,7 @@ class CategoryController extends Controller
                     'created_by' => Auth::id()
                 ]);
 
-                return $this->sendMessage('Tạo thành công');
+                return $this->sendMessage('Tạo thành công', 201);
             }
             return $this->forbidden();
         } catch (Exception $exception){
