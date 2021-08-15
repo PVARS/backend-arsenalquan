@@ -48,6 +48,7 @@ Route::group(['prefix'=>'v1/admin'], function (){
             Route::get('/{user}', [UserController::class, 'getById']);
             Route::post('/', [UserController::class, 'register']);
             Route::put('/{user}', [UserController::class, 'update']);
+            Route::put('/{user}/profile', [UserController::class, 'updateProfile']);
             Route::delete('/{user}', [UserController::class, 'destroy']);
         });
 
