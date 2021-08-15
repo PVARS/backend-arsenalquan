@@ -24,9 +24,12 @@ class AuthController extends Controller
         try {
             $fields = $request->all();
 
-            $user = User::all()
-                ->whereNull('deleted_at')
-                ->where('login_id', '=', $fields['login_id'])
+            $user = User::join('role', 'role.id', '=', 'user.role_id')
+                ->whereNull('role.deleted_at')
+                ->where('role.disabled', false)
+                ->whereNull('user.deleted_at')
+                ->where('user.disabled', false)
+                ->where('user.login_id', '=', $fields['login_id'])
                 ->first();
             if (!$user || !Hash::check($fields['password'], $user->password)){
                 return $this->unauthorized();
