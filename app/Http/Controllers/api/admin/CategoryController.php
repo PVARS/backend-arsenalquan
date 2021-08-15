@@ -7,6 +7,7 @@ use App\Http\Request\Category\CategoryRequest;
 use App\Http\Resources\admin\category\CategoryGetAllCollection;
 use App\Http\Resources\admin\category\CategoryRecycleBinCollection;
 use App\Models\Category;
+use App\Models\News;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -168,6 +169,10 @@ class CategoryController extends Controller
     {
         try {
             if (Gate::allows('access-admin')){
+                if (News::where('category_id', $category)->get()){
+                    return $this->sendMessage('Không thể xoá danh mục đang có chứa bài viết!');
+                }
+
                 $result = Category::whereNull('deleted_at')
                     ->where('id', $category)
                     ->update(['deleted_at' => Carbon::now('Asia/Ho_Chi_Minh')]);
