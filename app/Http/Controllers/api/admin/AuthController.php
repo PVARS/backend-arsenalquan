@@ -6,6 +6,7 @@ namespace App\Http\Controllers\api\admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Request\User\LoginRequest ;
+use App\Http\Resources\admin\user\UserGetAllResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
@@ -30,13 +31,18 @@ class AuthController extends Controller
                 ->whereNull('user.deleted_at')
                 ->where('user.disabled', false)
                 ->where('user.login_id', '=', $fields['login_id'])
+                ->select('user.*', 'role.role_name', 'role.disabled as role_disable')
                 ->first();
-            if (!$user || !Hash::check($fields['password'], $user->password)){
+
+            if (!$user || !Hash::check($fields['password'], $user->password)) {
                 return $this->unauthorized();
             }
             $token = $user->createToken('token')->plainTextToken;
 
-            return $this->sendInformation(['user_information'=>$user, 'access_token'=>$token]);
+            return $this->responseData([
+                'user_information' => new UserGetAllResource($user),
+                'access_token' => $token
+            ]);
         } catch (Exception $exception){
             return $this->sendError500($exception);
         }
@@ -52,7 +58,7 @@ class AuthController extends Controller
         try {
             auth()->user()->tokens()->delete();
 
-            return $this->sendMessage('Logged out');
+            return $this->sendMessage('Đã đăng xuất');
         } catch (Exception $exception){
             return $this->sendError500($exception);
         }
