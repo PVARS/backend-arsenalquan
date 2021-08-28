@@ -18,6 +18,10 @@ Route::group(['prefix'=>'v1/admin'], function (){
     Route::post('login', [AuthController::class, 'auth']);
 
     $publicRoutes = function (){
+        Route::get('/authenticated', function (){
+            return true;
+        });
+
         /*
         |--------------------------------------------------------------------------
         | API Role
