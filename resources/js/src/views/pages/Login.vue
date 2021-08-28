@@ -52,24 +52,24 @@
 </template>
 
 <script>
-import axios from "axios";
-import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
-import VueSweetalert2 from "vue-sweetalert2";
-import swal from "sweetalert2";
+import axios from 'axios';
+import Vue from 'vue';
+import BootstrapVue from 'bootstrap-vue';
+import VueSweetalert2 from 'vue-sweetalert2';
+import swal from 'sweetalert2';
 
 Vue.use(BootstrapVue);
 Vue.use(VueSweetalert2);
 window.Swal = swal;
 
 export default {
-  name: "Login",
+  name: 'Login',
   data() {
     return {
-      messagesHtml: "",
+      messagesHtml: '',
       form: {
-        login_id: "",
-        password: "",
+        login_id: '',
+        password: '',
       },
       showAlert: false,
     };
@@ -79,20 +79,20 @@ export default {
       let self = this;
 
       axios
-        .post("/api/v1/admin/login", this.form)
+        .post('/api/v1/admin/login', this.form)
         .then((response) => {
-          localStorage.setItem("user_info", JSON.stringify(response.data));
-          this.$router.push({ path: "/" });
+          localStorage.setItem('user_info', JSON.stringify(response.data));
+          this.$router.push({ path: '/' });
         })
         .catch((errors) => {
-          let errorConnect = "Error: Network Error";
-          let errorDb = "Error: Request failed with status code 500";
+          let errorConnect = 'Error: Network Error';
+          let errorDb = 'Error: Request failed with status code 500';
 
           if (errors === errorConnect || errors === errorDb) {
-            Swal.fire("LỖI", "Lỗi kết nối. Vui lòng thử lại sau !", "error");
+            Swal.fire('LỖI', 'Lỗi kết nối. Vui lòng thử lại sau !', 'error');
             return false;
           } else {
-            let strMsg = "";
+            let strMsg = '';
             self.showAlert = true;
             self.messagesHtml = errors.response.data.errors;
 
@@ -101,7 +101,7 @@ export default {
             } else {
               for (const [k, v] of Object.entries(self.messagesHtml)) {
                 v.forEach((errorValidation) => {
-                  strMsg += errorValidation + "<br>";
+                  strMsg += errorValidation + '<br>';
                 });
               }
               self.messagesHtml = strMsg;
