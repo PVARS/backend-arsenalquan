@@ -42,10 +42,11 @@ class AuthController extends Controller
 
             return $this->responseData([
                 'user_information' => new UserGetAllResource($user),
-                'access_token' => $token
+                'access_token' => $token,
+                'expire_date' => Carbon::now('Asia/Ho_Chi_Minh')->modify('+1 day')->format('d-m-Y H:i:s')
             ]);
         } catch (Exception $exception){
-            return $this->sendError500($exception);
+            return $this->sendError500();
         }
     }
 
