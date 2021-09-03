@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Livewire\Admin\Categories;
+use App\Http\Livewire\Admin\Category;
+use App\Http\Livewire\Admin\Homepage;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +16,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/{any}', function () {
+Route::get('/', function(){
     return view('index');
-})->where(['any' => '.*']);
+});
+
+Route::group(['prefix'=>'admin'], function(){
+    Route::get('/', Homepage::class)->name('admin');
+
+    Route::group(['prefix'=>'category'], function(){
+        Route::get('/categories', Categories::class)->name('categories');
+        Route::get('/', Category::class)->name('category');
+    });
+});

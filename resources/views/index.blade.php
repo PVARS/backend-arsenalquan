@@ -6,7 +6,6 @@
     <title>Trang quản trị Arsenal Quán</title>
 </head>
 <body>
-    <div id="app"></div>
-    <script src="{{ mix('js/main.js') }}"></script>
+    <h1>User</h1>
 </body>
 </html>
