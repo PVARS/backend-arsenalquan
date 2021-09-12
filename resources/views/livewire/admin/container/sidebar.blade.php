@@ -1,123 +1,113 @@
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <!-- Brand Logo -->
-    <a href="{{ route('admin') }}" class="brand-link" style="text-align: center">
-        <span class="brand-text font-weight-light">Arsenal Quán</span>
+<!-- Sidebar -->
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+        <div class="sidebar-brand-text mx-3">AQ System</div>
     </a>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <!-- Sidebar user panel (optional) -->
-        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-            <div class="image" style="color: #fff; font-size: 140%;">
-                <i class="nav-icon fas fa-user-circle"></i>
-            </div>
-            <div class="info">
-                <a href="javascript:void(0)" class="d-block">Welcome Phan Văn Vũ</a>
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item active">
+        <a class="nav-link" href="{{ route('admin') }}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Trang chủ</span></a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        Bài viết
+    </div>
+
+    <!-- Nav Item - Pages Collapse Menu -->
+    <li class="nav-item {{ request()->is('admin/category/categories') ? 'active' : '' }} {{  request()->is('admin/category') ? 'active' : ''  }}">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+            aria-expanded="true" aria-controls="collapseTwo">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Quản lí danh mục</span>
+        </a>
+        <div id="collapseTwo" class="collapse {{ request()->is('admin/category/categories') ? 'show' : '' }} {{  request()->is('admin/category') ? 'show' : ''  }}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item {{  request()->is('admin/category') ? 'active' : ''  }}" href="{{ route('category') }}">Thêm danh mục</a>
+                <a class="collapse-item {{ request()->is('admin/category/categories') ? 'active' : '' }}" href="{{ route('categories') }}">Danh sách danh mục</a>
             </div>
         </div>
+    </li>
 
-        <!-- Sidebar Menu -->
-        <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                <li class="nav-item">
-                    <a href="{{ route('admin') }}" class="nav-link {{ request()->is('admin') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-home"></i>
-                        <p>Trang chủ</p>
-                    </a>
-                </li>
-                <li class="nav-item {{ request()->is('admin/category') ? 'menu-open' : '' }} {{ request()->is('admin/category/categories') ? 'menu-open' : '' }}">
-                    <a href="javascript:void(0)" class="nav-link {{ request()->is('admin/category') ? 'active' : '' }} {{ request()->is('admin/category/categories') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-briefcase"></i>
-                        <p>
-                            Quản lí danh mục
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('category') }}" class="nav-link {{ request()->is('admin/category') ? 'active' : '' }}">
-                                <i class="fas fa-folder-plus nav-icon"></i>
-                                <p>Thêm danh mục</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('categories') }}" class="nav-link {{ request()->is('admin/category/categories') ? 'active' : '' }}">
-                                <i class="fas fa-list nav-icon"></i>
-                                <p>Danh sách danh mục</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item nav-link-new">
-                    <a href="javascript:void(0)" class="nav-link">
-                        <i class="nav-icon fas fa-newspaper"></i>
-                        <p>
-                            Quản lí bài viết
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="detail-news.php" class="nav-link nav-link-new-detail">
-                                <i class="fas fa-plus-square nav-icon"></i>
-                                <p>Thêm bài viết</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="list-news.php" class="nav-link nav-link-new-list">
-                                <i class="fas fa-list-ul nav-icon"></i>
-                                <p>Danh sách bài viết</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item nav-link-user">
-                    <a href="javascript:void(0)" class="nav-link">
-                        <i class="nav-icon fas fa-user"></i>
-                        <p>
-                            Quản lí tài khoản
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="detail-user.php" class="nav-link nav-link-user-detail">
-                                <i class="fas fa-user-plus nav-icon"></i>
-                                <p>Tạo tài khoản</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="list-users.php" class="nav-link nav-link-user-list">
-                                <i class="fas fa-list-ul nav-icon"></i>
-                                <p>Danh sách tài khoản</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a href="accept-post.php" class="nav-link nav-link-accept-post">
-                        <i class="fas fa-check-square nav-icon"></i>
-                        <p>
-                            Phê duyệt bài viết
-                            <span class="right badge badge-danger">2</span>
-                        </p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="setting-system.php" class="nav-link nav-link-setting-system">
-                        <i class="fas fa-cog nav-icon"></i>
-                        <p>
-                            Cài đặt hệ thống
-                        </p>
-                    </a>
-                </li>
-            </ul>
-            <a href="logout.php" style="position: absolute; bottom: 0; margin-bottom: 20px">
-                <i class="fas fa-sign-out-alt nav-icon" style="font-size: 20px"></i>&nbsp
-                Đăng xuất
-            </a>
-        </nav>
-        <!-- /.sidebar-menu -->
+    <!-- Nav Item - Utilities Collapse Menu -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+            aria-expanded="true" aria-controls="collapseUtilities">
+            <i class="fas fa-fw fa-wrench"></i>
+            <span>Utilities</span>
+        </a>
+        <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
+            data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Custom Utilities:</h6>
+                <a class="collapse-item" href="utilities-color.html">Colors</a>
+                <a class="collapse-item" href="utilities-border.html">Borders</a>
+                <a class="collapse-item" href="utilities-animation.html">Animations</a>
+                <a class="collapse-item" href="utilities-other.html">Other</a>
+            </div>
+        </div>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        Addons
     </div>
-    <!-- /.sidebar -->
-</aside>
+
+    <!-- Nav Item - Pages Collapse Menu -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
+            aria-expanded="true" aria-controls="collapsePages">
+            <i class="fas fa-fw fa-folder"></i>
+            <span>Pages</span>
+        </a>
+        <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Login Screens:</h6>
+                <a class="collapse-item" href="login.html">Login</a>
+                <a class="collapse-item" href="register.html">Register</a>
+                <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
+                <div class="collapse-divider"></div>
+                <h6 class="collapse-header">Other Pages:</h6>
+                <a class="collapse-item" href="404.html">404 Page</a>
+                <a class="collapse-item" href="blank.html">Blank Page</a>
+            </div>
+        </div>
+    </li>
+
+    <!-- Nav Item - Charts -->
+    <li class="nav-item">
+        <a class="nav-link" href="charts.html">
+            <i class="fas fa-fw fa-chart-area"></i>
+            <span>Charts</span></a>
+    </li>
+
+    <!-- Nav Item - Tables -->
+    <li class="nav-item">
+        <a class="nav-link" href="tables.html">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Tables</span></a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+</ul>
+<!-- End of Sidebar -->

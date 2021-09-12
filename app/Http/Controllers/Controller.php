@@ -63,7 +63,7 @@ class Controller extends BaseController
      *
      * @return JsonResponse
      */
-    public function unauthorized($msg = 'Tên đăng nhập hoặc mật khẩu không chính xác!'): JsonResponse
+    public function unauthorized($msg = 'Tên đăng nhập hoặc mật khẩu không chính xác !'): JsonResponse
     {
         return response()->json(['message'=>$msg], 401);
     }

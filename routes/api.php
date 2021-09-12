@@ -15,7 +15,7 @@ use App\Http\Controllers\api\admin\NewsController;
 
 Route::group(['prefix'=>'v1/admin'], function (){
     //Login route
-    Route::post('login', [AuthController::class, 'auth']);
+    Route::post('login', [AuthController::class, 'auth'])->name('apiLogin');
 
     $publicRoutes = function (){
         Route::get('/authenticated', function (){

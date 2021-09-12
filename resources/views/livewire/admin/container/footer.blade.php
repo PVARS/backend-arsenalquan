@@ -1,8 +1,9 @@
-<footer class="main-footer">
-    <strong>Copyright &copy; <a href="https://www.facebook.com/groups/ArsenalQuan" target="_blank">Arsenal Quán</a>
+<!-- Footer -->
+<footer class="sticky-footer bg-white">
+    <div class="container my-auto">
+        <div class="copyright text-center my-auto">
+            <span>Copyright &copy; <a href="https://www.facebook.com/groups/ArsenalQuan" target="_blank" rel="noopener noreferrer">Arsenal Quán</a></span>
+        </div>
+    </div>
 </footer>
-
-<!-- Control Sidebar -->
-<aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-</aside>
+<!-- End of Footer -->

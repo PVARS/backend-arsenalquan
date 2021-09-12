@@ -80,7 +80,7 @@
                 type: 'GET',
                 dataType: 'JSON',
                 beforeSend: function(xhr){
-                    xhr.setRequestHeader('Authorization', 'Bearer GD9WYMTtRWpZhLNlQGbjG1QhQ5LLvYyC0cJyBeSP');
+                    xhr.setRequestHeader('Authorization', 'Bearer mkFX61zdW6rwkrWUe2negHiYS9fAHFtxu9afNK0Z');
                 },
                 success: function(reponse){
                     let html = '';

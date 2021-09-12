@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LoginController;
 use App\Http\Livewire\Admin\Categories;
 use App\Http\Livewire\Admin\Category;
 use App\Http\Livewire\Admin\Homepage;
@@ -21,10 +22,14 @@ Route::get('/', function(){
 });
 
 Route::group(['prefix'=>'admin'], function(){
-    Route::get('/', Homepage::class)->name('admin');
+    Route::get('/login', [LoginController::class, 'login'])->name('login');
+    
+    Route::group([], function(){
+        Route::get('/', Homepage::class)->name('admin');
 
-    Route::group(['prefix'=>'category'], function(){
-        Route::get('/categories', Categories::class)->name('categories');
-        Route::get('/', Category::class)->name('category');
+        Route::group(['prefix'=>'category'], function(){
+            Route::get('/categories', Categories::class)->name('categories');
+            Route::get('/', Category::class)->name('category');
+        });
     });
 });
