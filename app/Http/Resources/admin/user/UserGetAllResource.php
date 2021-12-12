@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\admin\user;
 
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserGetAllResource extends JsonResource
@@ -19,6 +20,11 @@ class UserGetAllResource extends JsonResource
             $status = 'Vô hiệu hoá';
         }
 
+        $createAt = $this->created_at;
+        if (!$createAt){
+            $createAt = Carbon::now('Asia/Ho_Chi_Minh');
+        }
+
         return [
             'id' => $this->id,
             'login_id' => $this->login_id,
@@ -26,7 +32,7 @@ class UserGetAllResource extends JsonResource
             'email' => $this->email,
             'full_name' => $this->full_name,
             'status' => $status,
-            'created_at' => $this->created_at->format('d-m-Y H:i:s'),
+            'created_at' => $createAt->format('d-m-Y H:i:s'),
             'created_by' => $this->created_by
         ];
     }
