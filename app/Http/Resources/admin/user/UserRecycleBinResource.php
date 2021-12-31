@@ -27,7 +27,6 @@ class UserRecycleBinResource extends JsonResource
             'full_name' => $this->full_name,
             'status' => $status,
             'created_at' => $this->created_at->format('d-m-Y H:i:s'),
-            'created_by' => $this->created_by,
             'deleted_at' => $this->deleted_at
         ];
     }

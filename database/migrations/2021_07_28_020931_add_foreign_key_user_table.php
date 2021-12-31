@@ -15,6 +15,7 @@ class AddForeignKeyUserTable extends Migration
     {
         Schema::table('user', function (Blueprint $table) {
             $table->foreign('role_id')->references('id')->on('role')->onDelete('cascade');
+//            DB::raw('alter table `user` add constraint `user_role_id_foreign` foreign key (`role_id`) references `role` (`id`) on delete cascade');
         });
     }
 

@@ -18,6 +18,7 @@ class Role extends Model
     }
 
     protected $fillable = [
+        'id',
         'role_name',
         'disabled',
         'created_at',

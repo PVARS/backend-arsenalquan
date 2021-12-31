@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
 
 class Handler extends ExceptionHandler
 {
@@ -36,8 +37,23 @@ class Handler extends ExceptionHandler
     {
         $this->renderable(function (AuthenticationException $e, $request) {
             if ($request->is('api/*')){
-                return response()->json(['message' => 'Vui lòng đăng nhập'], 401);
+                return response()->json(['message' => 'Vui lòng đăng nhập.'], 401);
             }
         });
     }
+
+    public function render($request, \Throwable $exception)
+    {
+        if ($exception instanceof ValidationException && $request->wantsJson()) {
+
+            return response()->json([
+                'MESSAGE' => 'Dữ liệu không hợp lệ.',
+                'ERRORS' => $exception->validator->getMessageBag()], 200);
+
+        }
+
+        return parent::render($request, $exception);
+    }
+
+
 }

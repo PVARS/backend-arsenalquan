@@ -4,59 +4,54 @@
 namespace App\Http\Controllers\api\admin;
 
 
+use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Http\Request\Role\RoleRequest;
 use App\Http\Resources\admin\role\RoleGetAllCollection;
+use App\Http\Resources\admin\role\RoleGetAllResource;
 use App\Http\Resources\admin\role\RoleRecycleBinCollection;
-use App\Models\Role;
-use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\QueryException;
+use App\Http\Services\admin\RoleService;
 use Illuminate\Http\JsonResponse;
-use Exception;
-use Illuminate\Support\Facades\Gate;
 
 class RoleController extends Controller
 {
     /**
+     * @var RoleService
+     */
+    protected $service;
+
+    /**
+     * RoleController constructor.
+     */
+    public function __construct()
+    {
+        $this->service = new RoleService();
+    }
+
+    /**
      * Get all role
      *
      * @return JsonResponse
+     * @throws ApiException
      */
     public function findAll(): JsonResponse
     {
-        try {
-            $result = Role::whereNull('deleted_at')
-                ->orderby('id', 'asc')
-                ->orderby('disabled', 'asc')
-                ->get();
+        $result = $this->service->list();
 
-            return $this->responseData($this->formatJson(RoleGetAllCollection::class, $result));
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success($this->formatJson(RoleGetAllCollection::class, $result));
     }
 
     /**
      * List role in recycle bin
      *
      * @return JsonResponse
+     * @throws ApiException
      */
     public function recycleBin(): JsonResponse
     {
-        try {
-            if (Gate::allows('access-admin-system')){
-                $result = Role::whereNotNull('deleted_at')
-                    ->orderby('deleted_at', 'desc')
-                    ->get();
+        $result = $this->service->recycleBin();
 
-                return $this->responseData($this->formatJson(RoleRecycleBinCollection::class, $result));
-            }
-            return $this->forbidden();
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success($this->formatJson(RoleRecycleBinCollection::class, $result));
     }
 
     /**
@@ -64,20 +59,13 @@ class RoleController extends Controller
      *
      * @param $role
      * @return JsonResponse
+     * @throws ApiException
      */
     public function getById($role): JsonResponse
     {
-        try {
-            $result = Role::whereNull('deleted_at')
-                ->where('id', $role)
-                ->orderby('id', 'asc')
-                ->orderby('disabled', 'asc')
-                ->get();
+        $result = $this->service->getById($role);
 
-            return $this->responseData($this->formatJson(RoleGetAllCollection::class, $result));
-        } catch (ModelNotFoundException $exception){
-            return $this->sendMessage('Không tìm thấy', 404);
-        }
+        return $this->success($this->formatJson(RoleGetAllResource::class, $result));
     }
 
     /**
@@ -85,25 +73,16 @@ class RoleController extends Controller
      *
      * @param RoleRequest $request
      * @return JsonResponse
+     * @throws ApiException
      */
     public function store(RoleRequest $request): JsonResponse
     {
-        try {
-            if (Gate::allows('access-admin-system')){
-                $fields = $request->all();
+        $fields = $request->all();
 
-                Role::create([
-                    'role_name' => $fields['role_name'],
-                    'created_at' => Carbon::now('Asia/Ho_Chi_Minh'),
-                    'created_by' => auth()->user()->login_id
-                ]);
+        $result = $this->service->createRole($fields);
+        $this->message = 'Tạo thành công.';
 
-                return $this->sendMessage('Tạo thành công', 201);
-            }
-            return $this->forbidden();
-        } catch (QueryException $exception){
-            return $this->sendError500();
-        }
+        return $this->success($this->formatJson(RoleGetAllResource::class, $result));
     }
 
     /**
@@ -112,28 +91,16 @@ class RoleController extends Controller
      * @param RoleRequest $request
      * @param $role
      * @return JsonResponse
+     * @throws ApiException
      */
     public function update(RoleRequest $request, $role): JsonResponse
     {
-        try {
-            if (Gate::allows('access-admin-system')){
-                $fields = $request->all();
+        $fields = $request->all();
 
-                $result = Role::where('id', $role)->update([
-                    'role_name' => $fields['role_name'],
-                    'updated_at' => Carbon::now('Asia/Ho_Chi_Minh'),
-                    'updated_by' => auth()->user()->login_id
-                ]);
+        $result = $this->service->updateRole($fields, $role);
+        $this->message = 'Cập nhật thành công.';
 
-                if (!$result){
-                    return $this->sendMessage('Không tìm thấy', 404);
-                }
-                return $this->sendMessage('Cập nhật thành công');
-            }
-            return $this->forbidden();
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success($this->formatJson(RoleGetAllResource::class, $result));
     }
 
     /**
@@ -141,30 +108,14 @@ class RoleController extends Controller
      *
      * @param $role
      * @return JsonResponse
+     * @throws ApiException
      */
     public function destroy($role): JsonResponse
     {
-        try {
+        $this->service->delete($role);
+        $this->message = 'Xoá thành công.';
 
-            if (Gate::allows('access-admin-system')){
-                if (User::where('role_id', $role)->get()){
-                    return $this->sendMessage('Không thể xoá vai trò đang có tài khoản hoạt động!');
-                }
-
-                $result = Role::whereNull('deleted_at')
-                    ->where('id', $role)
-                    ->update(['deleted_at' => Carbon::now('Asia/Ho_Chi_Minh')]);
-
-                if (!$result){
-                    return $this->sendMessage('Không tìm thấy vai trò', 404);
-                }
-
-                return $this->sendMessage('Xoá thành công');
-            }
-            return $this->forbidden();
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success();
     }
 
     /**
@@ -172,60 +123,28 @@ class RoleController extends Controller
      *
      * @param $role
      * @return JsonResponse
+     * @throws ApiException
      */
     public function disable($role): JsonResponse
     {
-        try {
-            if (Gate::allows('access-admin-system')){
-                try {
-                    $result = Role::findOrFail($role);
-                } catch (ModelNotFoundException $exception){
-                    return $this->sendMessage('Vai trò không tồn tại', 404);
-                }
+        $result = $this->service->disable($role);
+        $this->message = $result;
 
-                if ($result->disabled == 0) {
-                    $status = true;
-                    $message = 'Đã khoá';
-                } else {
-                    $status = false;
-                    $message = 'Mở khoá thành công';
-                }
-
-                Role::whereNull('deleted_at')
-                    ->where('id', $role)
-                    ->update(['disabled' => $status]);
-
-                return $this->sendMessage($message);
-            }
-            return $this->forbidden();
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success();
     }
 
     /**
      * Restore role in recycle bin
      *
-     * @param $category
+     * @param $role
      * @return JsonResponse
+     * @throws ApiException
      */
     public function restore($role): JsonResponse
     {
-        try {
-            if (Gate::allows('access-admin-system')){
-                $result = Role::whereNotNull('deleted_at')
-                    ->where('id', $role)
-                    ->update(['deleted_at' => null]);
+        $this->service->restore($role);
+        $this->message = 'Đã khôi phục.';
 
-                if (!$result){
-                    return $this->sendMessage('Không tìm thấy! Vai trò có thể đã được khôi phục', 404);
-                }
-
-                return $this->sendMessage('Đã khôi phục vai trò');
-            }
-            return $this->forbidden();
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success();
     }
 }
