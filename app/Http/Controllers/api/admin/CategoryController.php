@@ -2,64 +2,54 @@
 
 namespace App\Http\Controllers\api\admin;
 
+use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Http\Request\Category\CategoryRequest;
 use App\Http\Resources\admin\category\CategoryGetAllCollection;
+use App\Http\Resources\admin\category\CategoryGetAllResource;
 use App\Http\Resources\admin\category\CategoryRecycleBinCollection;
-use App\Models\Category;
-use App\Models\News;
-use Carbon\Carbon;
-use Exception;
+use App\Http\Services\admin\CategoryService;
 use Illuminate\Http\JsonResponse;
-use \Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
     /**
+     * @var CategoryService
+     */
+    protected $service;
+
+    /**
+     * CategoryController constructor.
+     */
+    public function __construct()
+    {
+        $this->service = new CategoryService();
+    }
+
+    /**
      * Get all category
      *
      * @return JsonResponse
+     * @throws ApiException
      */
     public function findAll(): JsonResponse
     {
-        try {
-            $result = Category::join('user', 'user.id', '=', 'category.created_by')
-                ->whereNull('category.deleted_at')
-                ->orderby('disabled', 'asc')
-                ->orderby('category.created_at', 'desc')
-                ->select('category.*', 'user.login_id')
-                ->get();
+        $result = $this->service->list();
 
-            return $this->responseData($this->formatJson(CategoryGetAllCollection::class, $result));
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success($this->formatJson(CategoryGetAllCollection::class, $result));
     }
 
     /**
      * List category in recycle bin
      *
      * @return JsonResponse
+     * @throws ApiException
      */
     public function recycleBin(): JsonResponse
     {
-        try {
-            if (Gate::allows('access-admin')){
-                $result = Category::join('user', 'user.id', '=', 'category.created_by')
-                    ->whereNotNull('category.deleted_at')
-                    ->orderby('category.deleted_at', 'desc')
-                    ->select('category.*', 'user.login_id')
-                    ->get();
+        $result = $this->service->recycleBin();
 
-                return $this->responseData($this->formatJson(CategoryRecycleBinCollection::class, $result));
-            }
-            return $this->forbidden();
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success($this->formatJson(CategoryRecycleBinCollection::class, $result));
     }
 
     /**
@@ -67,21 +57,13 @@ class CategoryController extends Controller
      *
      * @param $category
      * @return JsonResponse
+     * @throws ApiException
      */
     public function getById($category): JsonResponse
     {
-        try {
-            $result = Category::join('user', 'user.id', '=', 'category.created_by')
-                ->whereNull('category.deleted_at')
-                ->where('category.id', $category)
-                ->orderby('category.created_at', 'desc')
-                ->select('category.*', 'user.login_id')
-                ->get();
+        $result = $this->service->categoryById($category);
 
-            return $this->responseData($this->formatJson(CategoryGetAllCollection::class, $result));
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success($this->formatJson(CategoryGetAllResource::class, $result));
     }
 
     /**
@@ -89,33 +71,14 @@ class CategoryController extends Controller
      *
      * @param CategoryRequest $request
      * @return JsonResponse
+     * @throws ApiException
      */
     public function store(CategoryRequest $request): JsonResponse
     {
-        try {
-            if (Gate::allows('access-admin')){
-                $fields = $request->all();
-                $slug = Str::slug($fields['category_name']);
-                $icon = null;
+        $this->service->create($request);
+        $this->message = 'Thêm thàh công.';
 
-                if (isset($fields['icon'])){
-                    $icon = $fields['icon'];
-                }
-
-                Category::create([
-                    'category_name' => $fields['category_name'],
-                    'icon' => $icon,
-                    'slug' => $slug,
-                    'created_at' => Carbon::now('Asia/Ho_Chi_Minh'),
-                    'created_by' => Auth::id()
-                ]);
-
-                return $this->sendMessage('Tạo thành công', 201);
-            }
-            return $this->forbidden();
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success();
     }
 
     /**
@@ -124,39 +87,14 @@ class CategoryController extends Controller
      * @param CategoryRequest $request
      * @param $category
      * @return JsonResponse
+     * @throws ApiException
      */
     public function update(CategoryRequest $request, $category): JsonResponse
     {
-        try {
-            if (Gate::allows('access-admin')){
-                $fields = $request->all();
-                $slug = Str::slug($fields['category_name']);
-                $icon = null;
+        $this->service->update($request, $category);
+        $this->message = 'Cập nhật thành công.';
 
-                if (isset($fields['icon'])){
-                    $icon = $fields['icon'];
-                }
-
-                $result = Category::whereNull('deleted_at')
-                    ->where('id', $category)
-                    ->update([
-                        'category_name' => $fields['category_name'],
-                        'icon' => $icon,
-                        'slug' => $slug,
-                        'updated_at' => Carbon::now('Asia/Ho_Chi_Minh'),
-                        'updated_by' => Auth::id()
-                    ]);
-
-                if (!$result){
-                    return $this->sendMessage('Không tìm thấy danh mục');
-                }
-
-                return $this->sendMessage('Cập nhật thành công');
-            }
-            return $this->forbidden();
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success();
     }
 
     /**
@@ -164,29 +102,14 @@ class CategoryController extends Controller
      *
      * @param $category
      * @return JsonResponse
+     * @throws ApiException
      */
     public function destroy($category): JsonResponse
     {
-        try {
-            if (Gate::allows('access-admin')){
-                if (News::where('category_id', $category)->get()){
-                    return $this->sendMessage('Không thể xoá danh mục đang có chứa bài viết!');
-                }
+        $this->service->delete($category);
+        $this->message = 'Xoá thành công.';
 
-                $result = Category::whereNull('deleted_at')
-                    ->where('id', $category)
-                    ->update(['deleted_at' => Carbon::now('Asia/Ho_Chi_Minh')]);
-
-                if (!$result){
-                    return $this->sendMessage('Không tìm thấy danh mục', 404);
-                }
-
-                return $this->sendMessage('Xoá thành công');
-            }
-            return $this->forbidden();
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success();
     }
 
     /**
@@ -194,35 +117,14 @@ class CategoryController extends Controller
      *
      * @param $category
      * @return JsonResponse
+     * @throws ApiException
      */
     public function disable($category): JsonResponse
     {
-        try {
-            if (Gate::allows('access-admin')){
-                try {
-                    $result = Category::findOrFail($category);
-                } catch (ModelNotFoundException $exception){
-                    return $this->sendMessage('Danh mục không tồn tại', 404);
-                }
+        $result = $this->service->disable($category);
+        $this->message = $result;
 
-                if ($result->disabled == 0) {
-                    $status = true;
-                    $message = 'Đã khoá';
-                } else {
-                    $status = false;
-                    $message = 'Mở khoá thành công';
-                }
-
-                Category::whereNull('deleted_at')
-                    ->where('id', $category)
-                    ->update(['disabled' => $status]);
-
-                return $this->sendMessage($message);
-            }
-            return $this->forbidden();
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success();
     }
 
     /**
@@ -230,24 +132,13 @@ class CategoryController extends Controller
      *
      * @param $category
      * @return JsonResponse
+     * @throws ApiException
      */
     public function restore($category): JsonResponse
     {
-        try {
-            if (Gate::allows('access-admin')){
-                $result = Category::whereNotNull('deleted_at')
-                    ->where('id', $category)
-                    ->update(['deleted_at' => null]);
+        $this->service->restore($category);
+        $this->message = 'Đã khôi phục danh mục.';
 
-                if (!$result){
-                    return $this->sendMessage('Không tìm thấy! Danh mục có thể đã được khôi phục', 404);
-                }
-
-                return $this->sendMessage('Đã khôi phục danh mục');
-            }
-            return $this->forbidden();
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success();
     }
 }

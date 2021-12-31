@@ -38,7 +38,7 @@ class RoleRequest extends HttpRequest
         return [
             'role_name.required' => 'Vui lòng nhập tên vai trò.',
             'role_name.max' => 'Tên vai trò không được quá 254 ký tự.',
-            'role_name.unique' => 'Vai trò này đã tồn tại'
+            'role_name.unique' => 'Vai trò này đã tồn tại.'
         ];
     }
 

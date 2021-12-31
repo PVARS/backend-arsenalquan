@@ -28,7 +28,7 @@ class UserRequest extends HttpRequest
         return [
             'login_id' => 'required|max:254|unique:user,login_id,'.$this->user,
             'password' => 'required|min:6|max:50',
-            'role_id' => 'required|integer|max:10',
+            'role_id' => 'required',
             'email' => 'required|max:254|regex:/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/ix|unique:user,email,'.$this->user,
             'full_name' => 'required|min:6|max:254'
         ];
@@ -49,8 +49,6 @@ class UserRequest extends HttpRequest
             'password.max' => 'Mật khẩu không được quá 50 ký tự.',
 
             'role_id.required' => 'Vui lòng chọn vai trò.',
-            'role_id.integer' => 'Chỉ được nhập ký tự số.',
-            'role_id.max' => 'Vai trò không được quá 10 ký tự.',
 
             'email.required' => 'Vui lòng nhập email.',
             'email.max' => 'Mật khẩu không được quá 254 ký tự.',
