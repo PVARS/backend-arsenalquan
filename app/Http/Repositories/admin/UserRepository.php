@@ -12,11 +12,40 @@ class UserRepository extends Repository
     /**
      * @return mixed
      */
-    public function list()
+    public function list(array $input)
     {
         return User::join('role', 'role.id', '=', 'user.role_id')
             ->whereNull('role.deleted_at')
             ->whereNull('user.deleted_at')
+            ->where(function ($query) use ($input) {
+                if ($input['full_name']) {
+                    $query->where('user.full_name', 'like', '%' . $input['full_name'] . '%');
+                }
+
+                if ($input['role_id']) {
+                    $query->where('user.role_id', $input['role_id']);
+                }
+
+                if ($input['email']) {
+                    $query->where('user.email', 'like', '%' . $input['email'] . '%');
+                }
+
+                if ($input['login_id']) {
+                    $query->where('user.login_id', 'like', '%' . $input['login_id'] . '%');
+                }
+
+                if ($input['status']) {
+                    $query->where('user.disabled', $input['status']);
+                }
+
+                if ($input['date_from'] && $input['date_to']) {
+                    $query->whereBetween('user.created_at', [$input['date_from'] . self::TIME_FROM, $input['date_to'] . self::TIME_TO]);
+                } else if ($input['date_from']) {
+                    $query->where('user.created_at', '>=', $input['date_from'] . self::TIME_FROM);
+                } else if ($input['date_to']) {
+                    $query->where('user.created_at', '<=', $input['date_to'] . self::TIME_TO);
+                }
+            })
             ->orderby('role.disabled', 'asc')
             ->orderby('user.role_id', 'asc')
             ->orderby('user.disabled', 'asc')

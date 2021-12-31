@@ -9,14 +9,8 @@ use App\Http\Resources\admin\user\UserGetAllCollection;
 use App\Http\Resources\admin\user\UserGetAllResource;
 use App\Http\Resources\admin\user\UserRecycleBinCollection;
 use App\Http\Services\admin\UserService;
-use App\Models\User;
-use Carbon\Carbon;
-use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -36,12 +30,15 @@ class UserController extends Controller
     /**
      * Get all user
      *
+     * @param Request $request
      * @return JsonResponse
      * @throws ApiException
      */
-    public function findAll(): JsonResponse
+    public function findAll(Request $request): JsonResponse
     {
-        $result = $this->service->list();
+        $field = $request->all();
+
+        $result = $this->service->list($field);
 
         return $this->success($this->formatJson(UserGetAllCollection::class, $result));
     }

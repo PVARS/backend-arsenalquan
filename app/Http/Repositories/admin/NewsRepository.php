@@ -19,15 +19,37 @@ class NewsRepository extends Repository
     }
 
     /**
+     * @param array $input
      * @return mixed
      */
-    public function list()
+    public function list(array $input)
     {
         return News::join('category', 'category.id', '=', 'news.category_id')
             ->join('user', 'user.id', '=', 'news.created_by')
             ->whereNull('news.deleted_at')
             ->where('news.approve', '=', true)
             ->whereNull('category.deleted_at')
+            ->where(function ($query) use ($input) {
+                if ($input['category_id']) {
+                    $query->where('news.category_id', $input['category_id']);
+                }
+
+                if ($input['title']) {
+                    $query->where('news.title', 'like', '%' . $input['title'] . '%');
+                }
+
+                if ($input['create_by']) {
+                    $query->where('user.full_name', 'like', '%' . $input['create_by'] . '%');
+                }
+
+                if ($input['date_from'] && $input['date_to']) {
+                    $query->whereBetween('news.created_at', [$input['date_from'] . self::TIME_FROM, $input['date_to'] . self::TIME_TO]);
+                } else if ($input['date_from']) {
+                    $query->where('news.created_at', '>=', $input['date_from'] . self::TIME_FROM);
+                } else if ($input['date_to']) {
+                    $query->where('news.created_at', '<=', $input['date_to'] . self::TIME_TO);
+                }
+            })
             ->orderby('news.created_at', 'desc')
             ->select(
                 'news.id',

@@ -10,6 +10,7 @@ use App\Http\Resources\admin\news\NewsRecycleBinCollection;
 use App\Http\Resources\admin\news\NewsGetAllCollection;
 use App\Http\Services\admin\NewsService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class NewsController extends Controller
 {
@@ -23,12 +24,15 @@ class NewsController extends Controller
     /**
      * Get all news
      *
+     * @param Request $request
      * @return JsonResponse
      * @throws ApiException
      */
-    public function findAll(): JsonResponse
+    public function findAll(Request $request): JsonResponse
     {
-        $result = $this->service->list();
+        $fields = $request->all();
+
+        $result = $this->service->list($fields);
 
         return $this->success($this->formatJson(NewsGetAllCollection::class, $result));
     }
