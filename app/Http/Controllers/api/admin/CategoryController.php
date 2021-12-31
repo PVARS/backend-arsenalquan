@@ -10,6 +10,7 @@ use App\Http\Resources\admin\category\CategoryGetAllResource;
 use App\Http\Resources\admin\category\CategoryRecycleBinCollection;
 use App\Http\Services\admin\CategoryService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
@@ -29,12 +30,15 @@ class CategoryController extends Controller
     /**
      * Get all category
      *
+     * @param Request $request
      * @return JsonResponse
      * @throws ApiException
      */
-    public function findAll(): JsonResponse
+    public function findAll(Request $request): JsonResponse
     {
-        $result = $this->service->list();
+        $fields = $request->all();
+
+        $result = $this->service->list($fields);
 
         return $this->success($this->formatJson(CategoryGetAllCollection::class, $result));
     }

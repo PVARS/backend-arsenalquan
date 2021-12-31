@@ -28,7 +28,7 @@ Route::group(['prefix'=>'v1/admin'], function (){
         |--------------------------------------------------------------------------
         */
         Route::group(['prefix'=>'role'], function (){
-            Route::get('/', [RoleController::class, 'findAll']);
+            Route::post('/list', [RoleController::class, 'findAll']);
             Route::get('/restore/{role}', [RoleController::class, 'restore']);
             Route::get('/recycle-bin', [RoleController::class, 'recycleBin']);
             Route::get('/{role}', [RoleController::class, 'getById']);
@@ -45,7 +45,7 @@ Route::group(['prefix'=>'v1/admin'], function (){
         */
         Route::group(['prefix'=>'user'], function (){
             Route::get('logout', [AuthController::class, 'logout']);
-            Route::get('/', [UserController::class, 'findAll']);
+            Route::post('/users', [UserController::class, 'findAll']);
             Route::get('/disable/{user}', [UserController::class, 'disable']);
             Route::get('/restore/{user}', [UserController::class, 'restore']);
             Route::get('/recycle-bin', [UserController::class, 'recycleBin']);
@@ -62,7 +62,7 @@ Route::group(['prefix'=>'v1/admin'], function (){
         |--------------------------------------------------------------------------
         */
         Route::group(['prefix'=>'category'], function (){
-            Route::get('/', [CategoryController::class, 'findAll']);
+            Route::post('/categories', [CategoryController::class, 'findAll']);
             Route::get('/restore/{category}', [CategoryController::class, 'restore']);
             Route::get('/disable/{category}', [CategoryController::class, 'disable']);
             Route::get('/recycle-bin', [CategoryController::class, 'recycleBin']);
@@ -78,7 +78,7 @@ Route::group(['prefix'=>'v1/admin'], function (){
         |--------------------------------------------------------------------------
         */
         Route::group(['prefix'=>'news'], function (){
-            Route::get('/', [NewsController::class, 'findAll']);
+            Route::post('/list', [NewsController::class, 'findAll']);
             Route::get('/category/{category}', [NewsController::class, 'findNewsByCategory']);
             Route::get('/pending', [NewsController::class, 'findPendingNews']);
             Route::get('/approve/{news}', [NewsController::class, 'approve']);

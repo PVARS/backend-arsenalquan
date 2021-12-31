@@ -33,13 +33,20 @@ class CategoryService extends Service
     /**
      * Get all category
      *
+     * @param $request
      * @return mixed
      * @throws ApiException
      */
-    public function list()
+    public function list($request)
     {
+        $input = [
+            'category_name' => isset($request['category_name']) ? $request['category_name'] : '',
+            'full_name' => isset($request['full_name']) ? $request['full_name'] : '',
+            'status' => isset($request['status']) ? $request['status'] : '',
+        ];
+
         try {
-            $result = $this->repository->list();
+            $result = $this->repository->list($input);
         } catch (\Exception $e) {
             throw new ApiException('AQ-0000');
         }

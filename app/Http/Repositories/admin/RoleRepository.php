@@ -10,11 +10,17 @@ use App\Models\Role;
 class RoleRepository extends Repository
 {
     /**
+     * @param array $input
      * @return mixed
      */
-    public function list()
+    public function list(array $input)
     {
         return Role::whereNull('deleted_at')
+            ->where(function ($query) use ($input) {
+                if ($input['role_name']) {
+                    $query->where('role_name', 'like', '%' . $input['role_name'] . '%');
+                }
+            })
             ->orderby('id', 'asc')
             ->orderby('disabled', 'asc')
             ->get();

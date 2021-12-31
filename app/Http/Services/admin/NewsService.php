@@ -35,15 +35,42 @@ class NewsService extends Service
     /**
      * Get all news
      *
+     * @param $request
      * @return mixed
      * @throws ApiException
      */
-    public function list()
+    public function list($request)
     {
+        $data = [];
+        $input = [
+            'category_id' => isset($request['category_id']) ? $request['category_id'] : '',
+            'title' => isset($request['title']) ? $request['title'] : '',
+            'create_by' => isset($request['create_by']) ? $request['create_by'] : '',
+            'key_word' => $request['key_word'] ?? [],
+            'date_from' => isset($request['date_from']) ? $request['date_from'] : '',
+            'date_to' => isset($request['date_to']) ? $request['date_to'] : '',
+        ];
+
         try {
-            $result = $this->repository->list();
+            $result = $this->repository->list($input);
         } catch (\Exception $e) {
             throw new ApiException('AQ-0000');
+        }
+
+        //Find by key word
+        if ($input['key_word']){
+            foreach ($result as $k => $item) {
+                $arrKeyWord = json_decode($item['key_word'], true);
+
+                if (!isset($arrKeyWord[$k]) || !isset($input['key_word'][$k])){
+                    return $data;
+                }
+
+                if (strtolower($arrKeyWord[$k]) == strtolower($input['key_word'][$k])){
+                    $data = [$item];
+                }
+            }
+            return $data;
         }
 
         return $result;
