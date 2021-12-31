@@ -4,14 +4,11 @@
 namespace App\Http\Controllers\api\admin;
 
 
+use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Http\Request\User\LoginRequest ;
-use App\Http\Resources\admin\user\UserGetAllResource;
-use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Hash;
+use App\Http\Services\admin\AuthService;
 use Illuminate\Http\JsonResponse;
-use Exception;
 
 class AuthController extends Controller
 {
@@ -19,35 +16,17 @@ class AuthController extends Controller
      * Auth login
      *
      * @param LoginRequest $request
+     * @param AuthService $service
      * @return JsonResponse
+     * @throws ApiException
      */
-    public function auth(LoginRequest $request): JsonResponse
+    public function auth(LoginRequest $request, AuthService $service): JsonResponse
     {
-        try {
-            $fields = $request->all();
+        $fields = $request->all();
 
-            $user = User::join('role', 'role.id', '=', 'user.role_id')
-                ->whereNull('role.deleted_at')
-                ->where('role.disabled', false)
-                ->whereNull('user.deleted_at')
-                ->where('user.disabled', false)
-                ->where('user.login_id', '=', $fields['login_id'])
-                ->select('user.*', 'role.role_name', 'role.disabled as role_disable')
-                ->first();
+        $data = $service->handleAuth($fields);
 
-            if (!$user || !Hash::check($fields['password'], $user->password)) {
-                return $this->unauthorized();
-            }
-            $token = $user->createToken('token')->plainTextToken;
-
-            return $this->responseData([
-                'user_information' => new UserGetAllResource($user),
-                'access_token' => $token,
-                'expire_date' => Carbon::now('Asia/Ho_Chi_Minh')->modify('+1 day')->format('d-m-Y H:i:s')
-            ]);
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success($data);
     }
 
     /**
@@ -57,12 +36,9 @@ class AuthController extends Controller
      */
     public function logout(): JsonResponse
     {
-        try {
-            auth()->user()->tokens()->delete();
+        auth()->user()->tokens()->delete();
+        $this->message = 'Đã đăng xuất.';
 
-            return $this->sendMessage('Đã đăng xuất');
-        } catch (Exception $exception){
-            return $this->sendError500($exception);
-        }
+        return $this->success();
     }
 }

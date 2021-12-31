@@ -2,64 +2,48 @@
 
 namespace App\Http\Controllers\api\admin;
 
+use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Http\Request\News\NewsRequest;
+use App\Http\Resources\admin\news\NewsGetAllResource;
 use App\Http\Resources\admin\news\NewsRecycleBinCollection;
 use App\Http\Resources\admin\news\NewsGetAllCollection;
-use App\Models\News;
-use Carbon\Carbon;
-use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Services\admin\NewsService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 
 class NewsController extends Controller
 {
+    protected $service;
+
+    public function __construct()
+    {
+        $this->service = new NewsService();
+    }
+
     /**
      * Get all news
      *
      * @return JsonResponse
+     * @throws ApiException
      */
     public function findAll(): JsonResponse
     {
-        try {
-            $result = News::join('category', 'category.id', '=', 'news.category_id')
-                ->join('user', 'user.id', '=', 'news.created_by')
-                ->whereNull('news.deleted_at')
-                ->where('news.approve', '=', true)
-                ->whereNull('category.deleted_at')
-                ->orderby('news.created_at', 'desc')
-                ->select('news.*', 'category.category_name', 'user.login_id')
-                ->get();
+        $result = $this->service->list();
 
-            return $this->responseData($this->formatJson(NewsGetAllCollection::class, $result));
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success($this->formatJson(NewsGetAllCollection::class, $result));
     }
 
     /**
      * Get all pending news
      *
      * @return JsonResponse
+     * @throws ApiException
      */
     public function findPendingNews(): JsonResponse
     {
-        try {
-            $result = News::join('category', 'category.id', '=', 'news.category_id')
-                ->join('user', 'user.id', '=', 'news.created_by')
-                ->whereNull('news.deleted_at')
-                ->where('news.approve', '=', false)
-                ->whereNull('category.deleted_at')
-                ->orderBy('news.created_at', 'asc')
-                ->select('news.*', 'category.category_name', 'user.login_id')
-                ->get();
+        $result = $this->service->listNewsPending();
 
-            return $this->responseData($this->formatJson(NewsGetAllCollection::class, $result));
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success($this->formatJson(NewsGetAllCollection::class, $result));
     }
 
     /**
@@ -67,23 +51,13 @@ class NewsController extends Controller
      *
      * @param $news
      * @return JsonResponse
+     * @throws ApiException
      */
     public function getById($news): JsonResponse
     {
-        try {
-            $result = News::join('category', 'category.id', '=', 'news.category_id')
-                ->join('user', 'user.id', '=', 'news.created_by')
-                ->whereNull('news.deleted_at')
-                ->where('news.id', $news)
-                ->whereNull('category.deleted_at')
-                ->orderBy('news.created_at', 'asc')
-                ->select('news.*', 'category.category_name', 'user.login_id')
-                ->get();
+        $result = $this->service->getById($news);
 
-            return $this->responseData($this->formatJson(NewsGetAllCollection::class, $result));
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success($this->formatJson(NewsGetAllCollection::class, $result));
     }
 
     /**
@@ -91,49 +65,26 @@ class NewsController extends Controller
      *
      * @param $category
      * @return JsonResponse
+     * @throws ApiException
      */
     public function findNewsByCategory($category): JsonResponse
     {
-        try {
-            $result = News::join('category', 'news.category_id', '=', 'category.id')
-                ->join('user', 'user.id', '=', 'news.created_by')
-                ->whereNull('news.deleted_at')
-                ->where('news.category_id', $category)
-                ->where('news.approve', '=', true)
-                ->whereNull('category.deleted_at')
-                ->orderBy('news.created_at', 'desc')
-                ->select('news.*', 'category.category_name', 'user.login_id')
-                ->get();
+        $result = $this->service->getNewsByCategory($category);
 
-            return $this->responseData($this->formatJson(NewsGetAllCollection::class, $result));
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success($this->formatJson(NewsGetAllCollection::class, $result));
     }
 
     /**
      * List news in recycle bin
      *
      * @return JsonResponse
+     * @throws ApiException
      */
     public function recycleBin(): JsonResponse
     {
-        try {
-            if (Gate::allows('access-admin')){
-                $result = News::join('category', 'news.category_id', '=', 'category.id')
-                    ->join('user', 'user.id', '=', 'news.created_by')
-                    ->whereNotNull('news.deleted_at')
-                    ->whereNull('category.deleted_at')
-                    ->orderby('news.deleted_at', 'asc')
-                    ->select('news.*', 'category.category_name', 'user.login_id')
-                    ->get();
+        $result = $this->service->recycleBin();
 
-                return $this->responseData($this->formatJson(NewsRecycleBinCollection::class, $result));
-            }
-            return $this->forbidden();
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success($this->formatJson(NewsRecycleBinCollection::class, $result));
     }
 
     /**
@@ -141,45 +92,16 @@ class NewsController extends Controller
      *
      * @param NewsRequest $request
      * @return JsonResponse
+     * @throws ApiException
      */
     public function store(NewsRequest $request): JsonResponse
     {
-        try {
-            $fields = $request->all();
+        $fields = $request->all();
 
-            $approve = true;
-            $approvedBy = auth()->user()->login_id;
-            if (auth()->user()->role_id != 1 || auth()->user()->role_id != 2){
-                $approve = false;
-                $approvedBy = null;
-            }
+        $result = $this->service->createNews($fields);
+        $this->message = 'Thêm thành công.';
 
-            if ($this->findCategory($fields['category_id']) != true){
-                return $this->sendMessage('Không tìm thấy! Danh mục đã bị xoá hoặc đã bị vô hiệu hoá', 404);
-            }
-
-            $result = News::create([
-                    'category_id' => $fields['category_id'],
-                    'title' => $fields['title'],
-                    'short_description' => $fields['short_description'],
-                    'thumbnail' => $fields['thumbnail'],
-                    'content' => Auth::id(),
-                    'key_word' => $fields['key_word'],
-                    'slug' => $fields['slug'],
-                    'approve' => $approve,
-                    'approved_by' => $approvedBy,
-                    'created_at' => Carbon::now('Asia/Ho_Chi_Minh'),
-                    'created_by' => Auth::id()
-            ]);
-
-            if (!$result){
-                return $this->sendMessage('Thêm thất bại', 400);
-            }
-
-            return $this->sendMessage('Tạo thành công', 201);
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success($this->formatJson(NewsGetAllResource::class, $result), 201);
     }
 
     /**
@@ -188,49 +110,16 @@ class NewsController extends Controller
      * @param NewsRequest $request
      * @param $news
      * @return JsonResponse
+     * @throws ApiException
      */
     public function update(NewsRequest $request, $news): JsonResponse
     {
-        try {
-            $fields = $request->all();
+        $fields = $request->all();
 
-            $approve = true;
-            $approvedBy = auth()->user()->login_id;
-            if (auth()->user()->role_id != 1 || auth()->user()->role_id != 2){
-                $approve = false;
-                $approvedBy = null;
-            }
+        $result = $this->service->updateNews($fields, $news);
+        $this->message = 'Cập nhật thành công.';
 
-            if ($this->findCategory($fields['category_id']) != true){
-                return $this->sendMessage('Không tìm thấy! Danh mục đã bị xoá hoặc đã bị vô hiệu hoá', 404);
-            }
-
-            $result = News::join('category', 'news.category_id', '=', 'category.id')
-                ->where('news.id', $news)
-                ->whereNull('news.deleted_at')
-                ->whereNull('category.deleted_at')
-                ->where('category.disabled', false)
-                ->update([
-                    'news.category_id' => $fields['category_id'],
-                    'news.title' => $fields['title'],
-                    'news.short_description' => $fields['short_description'],
-                    'news.thumbnail' => $fields['thumbnail'],
-                    'news.content' => Auth::id(),
-                    'news.key_word' => $fields['key_word'],
-                    'news.slug' => $fields['slug'],
-                    'news.approve' => $approve,
-                    'news.approved_by' => $approvedBy,
-                    'news.updated_at' => Carbon::now('Asia/Ho_Chi_Minh'),
-                    'news.updated_by' => Auth::id()
-            ]);
-
-            if (!$result){
-                return $this->sendMessage('Không tìm thấy! Bài viết có thể đã bị xoá hoặc danh mục đã bị vô hiệu hoá', 404);
-            }
-            return $this->sendMessage('Cập nhật thành công');
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success($this->formatJson(NewsGetAllResource::class, $result), 200);
     }
 
     /**
@@ -238,28 +127,14 @@ class NewsController extends Controller
      *
      * @param $news
      * @return JsonResponse
+     * @throws ApiException
      */
     public function approve($news): JsonResponse
     {
-        try {
-            if (Gate::allows('access-admin')){
-                try {
-                    $result = News::findOrFail($news);
-                } catch (ModelNotFoundException $exception){
-                    return $this->sendMessage('Không tìm thấy', 404);
-                }
+        $this->service->approve($news);
+        $this->message = 'Đã duyệt.';
 
-                if ($result->approve == true){
-                    return $this->sendMessage('Bài viết này đã được phê duyệt', 404);
-                }
-
-                if ($result->update(['approve' => true, 'approved_by' => auth()->user()->login_id])) // 0: false; 1: true
-                    return $this->sendMessage('Đã duyệt');
-            }
-            return $this->forbidden();
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success();
     }
 
     /**
@@ -267,31 +142,14 @@ class NewsController extends Controller
      *
      * @param $news
      * @return JsonResponse
+     * @throws ApiException
      */
     public function destroy($news): JsonResponse
     {
-        try {
-            if (Gate::allows('access-admin')){
-                $result = News::join('category', 'news.category_id', '=', 'category.id')
-                    ->whereNull('category.deleted_at')
-                    ->where('category.disabled', false)
-                    ->whereNull('news.deleted_at')
-                    ->where('news.id', $news)
-                    ->update([
-                        'news.approve' => false,
-                        'news.deleted_at' => Carbon::now('Asia/Ho_Chi_Minh')
-                    ]);
+        $this->service->delete($news);
+        $this->message = 'Đã xoá.';
 
-                if (!$result){
-                    return $this->sendMessage('Không tìm thấy! Bài viết có thể đã bị xoá hoặc danh mục đã bị vô hiệu hoá', 404);
-                }
-
-                return $this->sendMessage('Xoá thành công');
-            }
-            return $this->forbidden();
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success();
     }
 
     /**
@@ -299,24 +157,13 @@ class NewsController extends Controller
      *
      * @param $news
      * @return JsonResponse
+     * @throws ApiException
      */
     public function restore($news): JsonResponse
     {
-        try {
-            if (Gate::allows('access-admin')){
-                $result = News::whereNotNull('deleted_at')
-                    ->where('id', $news)
-                    ->update(['deleted_at' => null]);
+        $this->service->restore($news);
+        $this->message = 'Đã khôi phục bài viết.';
 
-                if (!$result){
-                    return $this->sendMessage('Không tìm thấy! Bài viết có thể đã được khôi phục', 404);
-                }
-
-                return $this->sendMessage('Đã khôi phục bài viết');
-            }
-            return $this->forbidden();
-        } catch (Exception $exception){
-            return $this->sendError500();
-        }
+        return $this->success();
     }
 }

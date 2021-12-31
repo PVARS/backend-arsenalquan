@@ -22,7 +22,7 @@ class UserGetAllResource extends JsonResource
 
         $createAt = $this->created_at;
         if (!$createAt){
-            $createAt = Carbon::now('Asia/Ho_Chi_Minh');
+            $createAt = Carbon::now();
         }
 
         return [
@@ -32,8 +32,7 @@ class UserGetAllResource extends JsonResource
             'email' => $this->email,
             'full_name' => $this->full_name,
             'status' => $status,
-            'created_at' => $createAt->format('d-m-Y H:i:s'),
-            'created_by' => $this->created_by
+            'created_at' => $createAt->format('d-m-Y H:i:s')
         ];
     }
 }

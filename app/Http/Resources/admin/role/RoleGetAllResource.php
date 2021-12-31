@@ -22,9 +22,7 @@ class RoleGetAllResource extends JsonResource
         return [
             'id' => $this->id,
             'role_name' => $this->role_name,
-            'status' => $disable,
-            'created_at' => $this->created_at->format('d-m-Y H:i:s'),
-            'created_by' => $this->created_by
+            'status' => $disable
         ];
     }
 }
