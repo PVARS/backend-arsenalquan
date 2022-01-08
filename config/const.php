@@ -24,5 +24,7 @@ return [
         'AQ-0015' => 'Tài khoản này không tồn tại.',
         'AQ-0016' => 'Không thể tự vô hiệu hoá chính bạn.',
         'AQ-0017' => 'Không thể tự xoá chính bạn.',
+
+        'AQ-0018' => 'Số trang không hợp lệ.'
     ]
 ];

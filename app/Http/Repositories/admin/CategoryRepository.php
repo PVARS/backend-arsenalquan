@@ -10,12 +10,26 @@ use App\Models\Category;
 class CategoryRepository extends Repository
 {
     /**
+     * @param array $input
      * @return mixed
      */
-    public function list()
+    public function list(array $input)
     {
         return Category::join('user', 'user.id', '=', 'category.created_by')
             ->whereNull('category.deleted_at')
+            ->where(function ($query) use ($input) {
+                if ($input['category_name']) {
+                    $query->where('category.category_name', 'like', '%' . $input['category_name'] . '%');
+                }
+
+                if ($input['created_by']) {
+                    $query->where('user.full_name', 'like', '%' . $input['created_by'] . '%');
+                }
+
+                if ($input['status']) {
+                    $query->where('category.disabled', $input['status']);
+                }
+            })
             ->orderby('disabled', 'asc')
             ->orderby('category.created_at', 'desc')
             ->select(

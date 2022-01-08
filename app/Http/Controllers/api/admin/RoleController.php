@@ -12,6 +12,7 @@ use App\Http\Resources\admin\role\RoleGetAllResource;
 use App\Http\Resources\admin\role\RoleRecycleBinCollection;
 use App\Http\Services\admin\RoleService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
@@ -31,12 +32,15 @@ class RoleController extends Controller
     /**
      * Get all role
      *
+     * @param Request $request
      * @return JsonResponse
      * @throws ApiException
      */
-    public function findAll(): JsonResponse
+    public function findAll(Request $request): JsonResponse
     {
-        $result = $this->service->list();
+        $fields = $request->all();
+
+        $result = $this->service->list($fields);
 
         return $this->success($this->formatJson(RoleGetAllCollection::class, $result));
     }

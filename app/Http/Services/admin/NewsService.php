@@ -35,13 +35,23 @@ class NewsService extends Service
     /**
      * Get all news
      *
+     * @param $request
      * @return mixed
      * @throws ApiException
      */
-    public function list()
+    public function list($request)
     {
+        $input = [
+            'category_id' => isset($request['category_id']) ? $request['category_id'] : '',
+            'title' => isset($request['title']) ? $request['title'] : '',
+            'created_by' => isset($request['created_by']) ? $request['created_by'] : '',
+            'key_word' => isset($request['key_word']) ? $request['key_word'] : '',
+            'date_from' => isset($request['date_from']) ? $request['date_from'] : '',
+            'date_to' => isset($request['date_to']) ? $request['date_to'] : '',
+        ];
+
         try {
-            $result = $this->repository->list();
+            $result = $this->repository->list($input);
         } catch (\Exception $e) {
             throw new ApiException('AQ-0000');
         }
@@ -158,7 +168,6 @@ class NewsService extends Service
             'short_description' => $request['short_description'],
             'thumbnail' => $request['thumbnail'],
             'content' => $request['content'],
-            'key_word' => json_encode($request['key_word']),
             'slug' => Str::slug($request['title']),
             'approve' => $approve,
             'approved_by' => $approvedBy,
@@ -213,7 +222,6 @@ class NewsService extends Service
             'news.short_description' => $request['short_description'],
             'news.thumbnail' => $request['thumbnail'],
             'news.content' => $request['content'],
-            'news.key_word' => json_encode($request['key_word']),
             'news.slug' => $request['title'],
             'news.updated_at' => Carbon::now(),
             'news.updated_by' => Auth::id()

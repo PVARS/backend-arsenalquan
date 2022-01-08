@@ -29,10 +29,19 @@ class RoleService extends Service
         $this->repository = new RoleRepository();
     }
 
-    public function list()
+    /**
+     * Get all role
+     *
+     * @param $request
+     * @return mixed
+     * @throws ApiException
+     */
+    public function list($request)
     {
+        $input = ['role_name' => isset($request['role_name']) ? $request['role_name'] : ''];
+
         try {
-            $result = $this->repository->list();
+            $result = $this->repository->list($input);
         } catch (\Exception $e) {
             throw new ApiException('AQ-0000');
         }

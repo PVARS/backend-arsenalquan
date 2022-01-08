@@ -35,10 +35,20 @@ class UserService extends Service
      * @return mixed
      * @throws ApiException
      */
-    public function list()
+    public function list($request)
     {
+        $input = [
+            'full_name' => isset($request['full_name']) ? $request['full_name'] : '',
+            'role_id' => isset($request['role_id']) ? $request['role_id'] : '',
+            'email' => isset($request['email']) ? $request['email'] : '',
+            'login_id' => isset($request['login_id']) ? $request['login_id'] : '',
+            'status' => isset($request['status']) ? $request['status'] : '',
+            'date_from' => isset($request['date_from']) ? $request['date_from'] : '',
+            'date_to' => isset($request['date_to']) ? $request['date_to'] : '',
+        ];
+
         try {
-            $result = $this->repository->list();
+            $result = $this->repository->list($input);
         } catch (\Exception $e) {
             throw new ApiException('AQ-0000');
         }

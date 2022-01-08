@@ -21,7 +21,6 @@ class CreateNewsTable extends Migration
             $table->string('short_description')->nullable();
             $table->text('thumbnail')->nullable();
             $table->text('content')->nullable();
-            $table->text('key_word')->nullable();
             $table->integer('view')->default(0);
             $table->string('slug')->unique();
             $table->boolean('approve')->default(true);
