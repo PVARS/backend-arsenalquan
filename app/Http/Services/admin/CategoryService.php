@@ -41,7 +41,7 @@ class CategoryService extends Service
     {
         $input = [
             'category_name' => isset($request['category_name']) ? $request['category_name'] : '',
-            'full_name' => isset($request['full_name']) ? $request['full_name'] : '',
+            'created_by' => isset($request['created_by']) ? $request['created_by'] : '',
             'status' => isset($request['status']) ? $request['status'] : '',
         ];
 

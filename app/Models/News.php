@@ -22,7 +22,6 @@ class News extends Model
         'short_description',
         'thumbnail',
         'content',
-        'key_word',
         'view',
         'slug',
         'approve',
@@ -35,8 +34,4 @@ class News extends Model
     ];
 
     protected $hidden = [];
-
-    protected $casts = [
-        'key_word' => 'array'
-    ];
 }

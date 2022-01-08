@@ -22,8 +22,8 @@ class CategoryRepository extends Repository
                     $query->where('category.category_name', 'like', '%' . $input['category_name'] . '%');
                 }
 
-                if ($input['full_name']) {
-                    $query->where('user.full_name', 'like', '%' . $input['full_name'] . '%');
+                if ($input['created_by']) {
+                    $query->where('user.full_name', 'like', '%' . $input['created_by'] . '%');
                 }
 
                 if ($input['status']) {

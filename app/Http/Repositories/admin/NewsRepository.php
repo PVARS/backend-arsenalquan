@@ -38,8 +38,12 @@ class NewsRepository extends Repository
                     $query->where('news.title', 'like', '%' . $input['title'] . '%');
                 }
 
-                if ($input['create_by']) {
-                    $query->where('user.full_name', 'like', '%' . $input['create_by'] . '%');
+                if ($input['key_word']) {
+                    $query->where('news.content', 'like', '%' . $input['key_word'] . '%');
+                }
+
+                if ($input['created_by']) {
+                    $query->where('user.full_name', 'like', '%' . $input['created_by'] . '%');
                 }
 
                 if ($input['date_from'] && $input['date_to']) {
@@ -57,7 +61,6 @@ class NewsRepository extends Repository
                 'news.short_description',
                 'news.thumbnail',
                 'news.content',
-                'news.key_word',
                 'news.view',
                 'news.slug',
                 'news.approve',
@@ -66,6 +69,7 @@ class NewsRepository extends Repository
                 'news.created_by',
                 'category.category_name',
                 'user.login_id')
+            ->limit(100)
             ->get();
     }
 
@@ -86,7 +90,6 @@ class NewsRepository extends Repository
                 'news.short_description',
                 'news.thumbnail',
                 'news.content',
-                'news.key_word',
                 'news.view',
                 'news.slug',
                 'news.approve',
@@ -116,7 +119,6 @@ class NewsRepository extends Repository
                 'news.short_description',
                 'news.thumbnail',
                 'news.content',
-                'news.key_word',
                 'news.view',
                 'news.slug',
                 'news.approve',
@@ -147,7 +149,6 @@ class NewsRepository extends Repository
                 'news.short_description',
                 'news.thumbnail',
                 'news.content',
-                'news.key_word',
                 'news.view',
                 'news.slug',
                 'news.approve',
@@ -175,7 +176,6 @@ class NewsRepository extends Repository
                 'news.short_description',
                 'news.thumbnail',
                 'news.content',
-                'news.key_word',
                 'news.view',
                 'news.slug',
                 'news.approve',

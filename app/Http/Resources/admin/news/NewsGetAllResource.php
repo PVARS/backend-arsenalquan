@@ -26,7 +26,6 @@ class NewsGetAllResource extends JsonResource
             'short_description' => $this->short_description,
             'thumbnail' => $this->thumbnail,
             'content' => $this->content,
-            'key_word' => $this->key_word,
             'view' => $this->view,
             'slug' => $this->slug,
             'approve' => $approve,

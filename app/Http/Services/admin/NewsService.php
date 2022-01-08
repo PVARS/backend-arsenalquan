@@ -41,12 +41,11 @@ class NewsService extends Service
      */
     public function list($request)
     {
-        $data = [];
         $input = [
             'category_id' => isset($request['category_id']) ? $request['category_id'] : '',
             'title' => isset($request['title']) ? $request['title'] : '',
-            'create_by' => isset($request['create_by']) ? $request['create_by'] : '',
-            'key_word' => $request['key_word'] ?? [],
+            'created_by' => isset($request['created_by']) ? $request['created_by'] : '',
+            'key_word' => isset($request['key_word']) ? $request['key_word'] : '',
             'date_from' => isset($request['date_from']) ? $request['date_from'] : '',
             'date_to' => isset($request['date_to']) ? $request['date_to'] : '',
         ];
@@ -55,22 +54,6 @@ class NewsService extends Service
             $result = $this->repository->list($input);
         } catch (\Exception $e) {
             throw new ApiException('AQ-0000');
-        }
-
-        //Find by key word
-        if ($input['key_word']){
-            foreach ($result as $k => $item) {
-                $arrKeyWord = json_decode($item['key_word'], true);
-
-                if (!isset($arrKeyWord[$k]) || !isset($input['key_word'][$k])){
-                    return $data;
-                }
-
-                if (strtolower($arrKeyWord[$k]) == strtolower($input['key_word'][$k])){
-                    $data = [$item];
-                }
-            }
-            return $data;
         }
 
         return $result;
@@ -185,7 +168,6 @@ class NewsService extends Service
             'short_description' => $request['short_description'],
             'thumbnail' => $request['thumbnail'],
             'content' => $request['content'],
-            'key_word' => json_encode($request['key_word']),
             'slug' => Str::slug($request['title']),
             'approve' => $approve,
             'approved_by' => $approvedBy,
@@ -240,7 +222,6 @@ class NewsService extends Service
             'news.short_description' => $request['short_description'],
             'news.thumbnail' => $request['thumbnail'],
             'news.content' => $request['content'],
-            'news.key_word' => json_encode($request['key_word']),
             'news.slug' => $request['title'],
             'news.updated_at' => Carbon::now(),
             'news.updated_by' => Auth::id()
