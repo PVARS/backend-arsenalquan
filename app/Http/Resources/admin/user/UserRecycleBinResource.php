@@ -15,8 +15,10 @@ class UserRecycleBinResource extends JsonResource
     public function toArray($request)
     {
         $status = 'Đang hoạt động';
+        $statusCode = 0;
         if ($this->disabled === 1 || $this->role_disable === 1){
             $status = 'Vô hiệu hoá';
+            $statusCode = 1;
         }
 
         return [
@@ -26,6 +28,7 @@ class UserRecycleBinResource extends JsonResource
             'email' => $this->email,
             'full_name' => $this->full_name,
             'status' => $status,
+            'statusCode' => $statusCode,
             'created_at' => $this->created_at->format('d-m-Y H:i:s'),
             'deleted_at' => $this->deleted_at
         ];

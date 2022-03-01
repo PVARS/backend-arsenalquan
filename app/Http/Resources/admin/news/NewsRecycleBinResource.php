@@ -14,11 +14,6 @@ class NewsRecycleBinResource extends JsonResource
      */
     public function toArray($request)
     {
-        $approve = "Đang chờ";
-        if ($this->approve === 1){
-            $approve = "Đã duyệt";
-        }
-
         return [
             'id' => $this->id,
             'category' => $this->category_name,
@@ -28,7 +23,7 @@ class NewsRecycleBinResource extends JsonResource
             'content' => $this->content,
             'view' => $this->view,
             'slug' => $this->slug,
-            'approve' => $approve,
+            'approve' => $this->approve, //1: Approved; 0: Pending,
             'approved_by' => $this->approved_by,
             'created_at' => $this->created_at->format('d-m-Y H:i:s'),
             'created_by' => $this->login_id,
