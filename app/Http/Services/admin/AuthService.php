@@ -26,14 +26,23 @@ class AuthService extends Controller
         try {
             $repository = new AuthRepository();
             $user = $repository->getUserInfoByUserName($request);
+
+            if ($user) {
+                $personToken = $repository->getTokenEnableId($user->id);
+
+                if (!$personToken->isEmpty()) {
+                    $repository->deleteTokenEnableIdById($user->id);
+                }
+            }
         } catch (Exception $e) {
             throw new ApiException('AQ-0000');
         }
 
         if (!$user || !Hash::check($request['password'], $user->password)) {
-            throw new ApiException('AQ-0001', 401);
+            throw new ApiException('AQ-0001', 200);
         }
-        $token = $user->createToken('token')->plainTextToken;
+
+        $token = $user->createToken($user->role_name)->plainTextToken;
 
         return [
             'user_information' => new UserGetAllResource($user),

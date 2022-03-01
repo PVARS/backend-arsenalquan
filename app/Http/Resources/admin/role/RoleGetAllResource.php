@@ -14,15 +14,10 @@ class RoleGetAllResource extends JsonResource
      */
     public function toArray($request)
     {
-        $disable = 'Vô hiệu hoá';
-        if ($this->disabled === 0){
-            $disable = 'Đang hoạt động';
-        }
-
         return [
             'id' => $this->id,
             'role_name' => $this->role_name,
-            'status' => $disable
+            'status' => $this->disabled
         ];
     }
 }

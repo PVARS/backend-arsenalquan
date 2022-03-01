@@ -93,7 +93,7 @@ class RoleService extends Service
      */
     public function recycleBin()
     {
-        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 403);
 
         try {
             $result = $this->repository->recycleBin();
@@ -113,7 +113,7 @@ class RoleService extends Service
      */
     public function createRole($request)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $idMax = $this->getIdMax('role');
 
@@ -146,7 +146,7 @@ class RoleService extends Service
      */
     public function updateRole($request, $role)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $this->roleFindOrFail($role);
 
@@ -177,12 +177,17 @@ class RoleService extends Service
      */
     public function delete($role)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $roleResult = $this->roleFindOrFail($role);
 
         $userRepo = new UserRepository();
         $userResult = $userRepo->findFullUserByRole($role);
+        $user = $userRepo->getById(Auth::id());
+
+        if ($roleResult->id === $user->role_id) {
+            throw new ApiException('AQ-0019', 200);
+        }
 
         if (!$userResult->isEmpty()) {
             throw new ApiException('AQ-0012', 200);
@@ -215,13 +220,20 @@ class RoleService extends Service
      */
     public function disable($role)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $roleResult = $this->roleFindOrFail($role);
 
         if ($roleResult->disabled == 0) {
             $status = true;
             $message = 'Đã khoá.';
+
+            $userRepo = new UserRepository();
+            $user = $userRepo->getById(Auth::id());
+
+            if ($user->role_id === $roleResult->id) {
+                throw new ApiException('AQ-0018', 403);
+            }
         } else {
             $status = false;
             $message = 'Mở khoá thành công.';
@@ -249,7 +261,7 @@ class RoleService extends Service
      */
     public function restore($role)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $this->roleFindOrFail($role);
 

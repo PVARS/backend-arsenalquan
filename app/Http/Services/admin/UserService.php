@@ -100,7 +100,7 @@ class UserService extends Service
      */
     public function recycleBin()
     {
-        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 403);
 
         try {
             $result = $this->repository->recycleBin();
@@ -120,7 +120,7 @@ class UserService extends Service
      */
     public function register($request)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $roleId = $request['role_id'];
 
@@ -169,7 +169,7 @@ class UserService extends Service
      */
     public function update($request, $user)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $roleId = $request['role_id'];
 
@@ -273,15 +273,20 @@ class UserService extends Service
      */
     public function disable($user)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $roleService = new RoleService();
+        $userLogged = $this->repository->getById(Auth::id());
 
         //Check exist user
         $userResult = $this->userFindOrFail($user);
 
         //Check exist role
         $roleResult = $roleService->roleFindOrFail($userResult->role_id);
+
+        if ($userResult->role_id === $userLogged->role_id) {
+            throw new ApiException('AQ-0020', 200);
+        }
 
         if ($user == Auth::id()) {
             throw new ApiException('AQ-0016', 200);
@@ -327,12 +332,17 @@ class UserService extends Service
      */
     public function delete($user)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
-        $this->userFindOrFail($user);
+        $userResult = $this->userFindOrFail($user);
+        $userLogged = $this->repository->getById(Auth::id());
 
         if ($user == Auth::id()) {
             throw new ApiException('AQ-0017', 200);
+        }
+
+        if ($userResult->role_id === $userLogged->role_id) {
+            throw new ApiException('AQ-0020', 200);
         }
 
         $input = [
@@ -358,7 +368,7 @@ class UserService extends Service
      */
     public function restore($user)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $this->userFindOrFail($user);
 

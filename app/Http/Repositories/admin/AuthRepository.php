@@ -5,6 +5,7 @@ namespace App\Http\Repositories\admin;
 
 
 use App\Http\Repositories\Repository;
+use App\Models\PersonAccessTokens;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
@@ -34,5 +35,26 @@ class AuthRepository extends Repository
                 'role.role_name',
                 'role.disabled as role_disable')
             ->first();
+    }
+
+    /**
+     * @param  mixed $request
+     * @return void
+     */
+    public function getTokenEnableId($userId)
+    {
+        return PersonAccessTokens::where('tokenable_id', '=', $userId)
+            ->select('tokenable_id')
+            ->get();
+    }
+
+    /**
+     * @param  mixed $request
+     * @return void
+     */
+    public function deleteTokenEnableIdById($userId)
+    {
+        return PersonAccessTokens::where('tokenable_id', '=', $userId)
+            ->delete();
     }
 }

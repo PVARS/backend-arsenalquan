@@ -4,7 +4,7 @@ return [
     'MESSAGE' => [
         'AQ-0000' => 'Lỗi hệ thống. Vui lòng thử lại sau.',
         'AQ-0001' => 'Tên đăng nhập hoặc mật khẩu không chính xác.',
-        'AQ-0002' => 'Không có quyền truy cập.',
+        'AQ-0002' => 'Bạn không có quyền thực hiện hành động này.',
 
         'AQ-0003' => 'Không tìm thấy danh mục.',
         'AQ-0004' => 'Không thể xoá danh mục đang có chứa bài viết.',
@@ -25,6 +25,8 @@ return [
         'AQ-0016' => 'Không thể tự vô hiệu hoá chính bạn.',
         'AQ-0017' => 'Không thể tự xoá chính bạn.',
 
-        'AQ-0018' => 'Số trang không hợp lệ.'
+        'AQ-0018' => 'Bạn không thể vô hiệu hoá vai trò này.',
+        'AQ-0019' => 'Bạn không thể xoá vai trò này.',
+        'AQ-0020' => 'Không thể xoá tài khoản cùng vai trò.',
     ]
 ];

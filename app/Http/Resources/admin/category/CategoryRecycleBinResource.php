@@ -14,17 +14,12 @@ class CategoryRecycleBinResource extends JsonResource
      */
     public function toArray($request)
     {
-        $disable = 'Vô hiệu hoá';
-        if ($this->disabled === 0){
-            $disable = 'Đang hoạt động';
-        }
-
         return [
             'id' => $this->id,
             'category' => $this->category_name,
             'slug' => $this->slug,
             'icon' => $this->icon,
-            'status' => $disable,
+            'status' => $this->disabled,
             'created_at' => $this->created_at->format('d-m-Y H:i:s'),
             'created_by' => $this->login_id,
             'deleted_at' => $this->deleted_at->format('d-m-Y H:i:s')

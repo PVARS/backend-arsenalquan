@@ -16,8 +16,10 @@ class UserGetAllResource extends JsonResource
     public function toArray($request)
     {
         $status = 'Đang hoạt động';
+        $statusCode = 0;
         if ($this->disabled === 1 || $this->role_disable === 1){
             $status = 'Vô hiệu hoá';
+            $statusCode = 1;
         }
 
         $createAt = $this->created_at;
@@ -32,6 +34,7 @@ class UserGetAllResource extends JsonResource
             'email' => $this->email,
             'full_name' => $this->full_name,
             'status' => $status,
+            'statusCode' => $statusCode,
             'created_at' => $createAt->format('d-m-Y H:i:s')
         ];
     }
