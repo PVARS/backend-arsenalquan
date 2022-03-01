@@ -183,6 +183,11 @@ class RoleService extends Service
 
         $userRepo = new UserRepository();
         $userResult = $userRepo->findFullUserByRole($role);
+        $user = $userRepo->getById(Auth::id());
+
+        if ($roleResult->id === $user->role_id) {
+            throw new ApiException('AQ-0019', 200);
+        }
 
         if (!$userResult->isEmpty()) {
             throw new ApiException('AQ-0012', 200);
@@ -222,6 +227,13 @@ class RoleService extends Service
         if ($roleResult->disabled == 0) {
             $status = true;
             $message = 'Đã khoá.';
+
+            $userRepo = new UserRepository();
+            $user = $userRepo->getById(Auth::id());
+
+            if ($user->role_id === $roleResult->id) {
+                throw new ApiException('AQ-0018', 403);
+            }
         } else {
             $status = false;
             $message = 'Mở khoá thành công.';

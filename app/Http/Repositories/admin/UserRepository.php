@@ -78,6 +78,7 @@ class UserRepository extends Repository
                 'user.email',
                 'user.full_name',
                 'user.disabled',
+                'user.role_id',
                 'user.created_at',
                 'role.role_name',
                 'role.disabled as role_disable')
