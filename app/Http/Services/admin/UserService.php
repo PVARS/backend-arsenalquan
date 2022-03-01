@@ -100,7 +100,7 @@ class UserService extends Service
      */
     public function recycleBin()
     {
-        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 403);
 
         try {
             $result = $this->repository->recycleBin();
@@ -120,7 +120,7 @@ class UserService extends Service
      */
     public function register($request)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $roleId = $request['role_id'];
 
@@ -169,7 +169,7 @@ class UserService extends Service
      */
     public function update($request, $user)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $roleId = $request['role_id'];
 
@@ -273,7 +273,7 @@ class UserService extends Service
      */
     public function disable($user)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $roleService = new RoleService();
 
@@ -327,7 +327,7 @@ class UserService extends Service
      */
     public function delete($user)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $this->userFindOrFail($user);
 
@@ -358,7 +358,7 @@ class UserService extends Service
      */
     public function restore($user)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $this->userFindOrFail($user);
 

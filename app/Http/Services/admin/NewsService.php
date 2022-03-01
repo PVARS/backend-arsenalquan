@@ -120,7 +120,7 @@ class NewsService extends Service
      */
     public function recycleBin()
     {
-        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 403);
 
         try {
             $result = $this->repository->recycleBin();
@@ -251,7 +251,7 @@ class NewsService extends Service
      */
     public function approve($news)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 403);
 
         $newsResult = $this->repository->getById($news);
         if (!$newsResult) {
@@ -282,7 +282,7 @@ class NewsService extends Service
      */
     public function delete($news)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 403);
 
         $newsResult = $this->repository->getById($news);
         if (!$newsResult) {
@@ -312,7 +312,7 @@ class NewsService extends Service
      */
     public function restore($news)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 403);
 
         $input = ['deleted_at' => null];
 

@@ -96,16 +96,13 @@ class CategoryService extends Service
      */
     public function recycleBin()
     {
+        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 403);
+
         try {
             $result = $this->repository->recycleBin();
         } catch (\Exception $e) {
             throw new ApiException('AQ-0000');
         }
-
-        if (Gate::allows('access-admin')) {
-            return $result;
-        }
-        throw new ApiException('AQ-0002', 401);
     }
 
     /**
@@ -116,7 +113,7 @@ class CategoryService extends Service
      */
     public function create($request)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 403);
 
         $input = [
             'id' => $this->getIdMax('category'),
@@ -147,7 +144,7 @@ class CategoryService extends Service
      */
     public function update($request, $category)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 403);
 
         $this->categoryFindOrFail($category);
 
@@ -178,7 +175,7 @@ class CategoryService extends Service
      */
     public function delete($category)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 403);
 
         $repositoryNews = new NewsRepository();
 
@@ -215,7 +212,7 @@ class CategoryService extends Service
      */
     public function disable($category)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 403);
 
         $result = $this->categoryFindOrFail($category);
 
@@ -253,7 +250,7 @@ class CategoryService extends Service
      */
     public function restore($category)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 403);
 
         $this->categoryFindOrFail($category);
 

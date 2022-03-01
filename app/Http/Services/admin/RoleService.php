@@ -93,7 +93,7 @@ class RoleService extends Service
      */
     public function recycleBin()
     {
-        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN)) throw new ApiException('AQ-0002', 403);
 
         try {
             $result = $this->repository->recycleBin();
@@ -113,7 +113,7 @@ class RoleService extends Service
      */
     public function createRole($request)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $idMax = $this->getIdMax('role');
 
@@ -146,7 +146,7 @@ class RoleService extends Service
      */
     public function updateRole($request, $role)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $this->roleFindOrFail($role);
 
@@ -177,7 +177,7 @@ class RoleService extends Service
      */
     public function delete($role)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $roleResult = $this->roleFindOrFail($role);
 
@@ -215,7 +215,7 @@ class RoleService extends Service
      */
     public function disable($role)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $roleResult = $this->roleFindOrFail($role);
 
@@ -249,7 +249,7 @@ class RoleService extends Service
      */
     public function restore($role)
     {
-        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 401);
+        if (!Gate::allows(self::ACCESS_ADMIN_SYS)) throw new ApiException('AQ-0002', 403);
 
         $this->roleFindOrFail($role);
 

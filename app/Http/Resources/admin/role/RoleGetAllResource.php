@@ -22,7 +22,7 @@ class RoleGetAllResource extends JsonResource
         return [
             'id' => $this->id,
             'role_name' => $this->role_name,
-            'status' => $disable
+            'status' => $this->disabled
         ];
     }
 }
